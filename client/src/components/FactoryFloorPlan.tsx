@@ -12,7 +12,9 @@ import {
   Trash2,
   Droplets,
   RotateCcw,
-  Plus
+  Plus,
+  Link as LinkIcon,
+  Unlink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +24,12 @@ interface Station {
   name: string;
   x: number;
   y: number;
+}
+
+interface Connection {
+  id: string;
+  from: string;
+  to: string;
 }
 
 const stationTypes = [
@@ -39,7 +47,9 @@ const stationTypes = [
 
 export default function FactoryFloorPlan() {
   const [stations, setStations] = useState<Station[]>([]);
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [connections, setConnections] = useState<Connection[]>([]);
+  const [linkingMode, setLinkingMode] = useState(false);
+  const [linkFrom, setLinkFrom] = useState<string | null>(null);
 
   const handleAddStation = (type: string) => {
     const stationType = stationTypes.find(s => s.type === type);
@@ -49,8 +59,8 @@ export default function FactoryFloorPlan() {
       id: `${type}-${Date.now()}`,
       type,
       name: stationType.label,
-      x: 100,
-      y: 100,
+      x: 100 + stations.length * 20,
+      y: 100 + stations.length * 20,
     };
     setStations([...stations, newStation]);
   };
@@ -63,10 +73,98 @@ export default function FactoryFloorPlan() {
 
   const handleRemoveStation = (id: string) => {
     setStations(stations.filter(s => s.id !== id));
+    // Remove associated connections
+    setConnections(connections.filter(c => c.from !== id && c.to !== id));
+  };
+
+  const handleStationClick = (stationId: string) => {
+    if (!linkingMode) return;
+
+    if (linkFrom === null) {
+      // Start linking
+      setLinkFrom(stationId);
+    } else if (linkFrom === stationId) {
+      // Cancel linking
+      setLinkFrom(null);
+    } else {
+      // Complete linking
+      const newConnection: Connection = {
+        id: `conn-${Date.now()}`,
+        from: linkFrom,
+        to: stationId
+      };
+      setConnections([...connections, newConnection]);
+      setLinkFrom(null);
+    }
+  };
+
+  const handleRemoveConnection = (connectionId: string) => {
+    setConnections(connections.filter(c => c.id !== connectionId));
   };
 
   const handleReset = () => {
     setStations([]);
+    setConnections([]);
+    setLinkingMode(false);
+    setLinkFrom(null);
+  };
+
+  const getStationCenter = (stationId: string) => {
+    const station = stations.find(s => s.id === stationId);
+    if (!station) return { x: 0, y: 0 };
+    return {
+      x: station.x + 75, // Half of card width
+      y: station.y + 25  // Half of card height
+    };
+  };
+
+  const drawConnection = (conn: Connection) => {
+    const from = getStationCenter(conn.from);
+    const to = getStationCenter(conn.to);
+    
+    // Calculate arrow path
+    const angle = Math.atan2(to.y - from.y, to.x - from.x);
+    const arrowSize = 8;
+    const arrowX = to.x - Math.cos(angle) * 20;
+    const arrowY = to.y - Math.sin(angle) * 20;
+
+    return (
+      <g key={conn.id}>
+        {/* Connection line */}
+        <line
+          x1={from.x}
+          y1={from.y}
+          x2={arrowX}
+          y2={arrowY}
+          stroke="hsl(var(--accent))"
+          strokeWidth="2"
+          markerEnd="url(#arrowhead)"
+        />
+        {/* Delete button for connection */}
+        <g
+          className="cursor-pointer hover:opacity-75"
+          onClick={() => handleRemoveConnection(conn.id)}
+        >
+          <circle
+            cx={(from.x + to.x) / 2}
+            cy={(from.y + to.y) / 2}
+            r="10"
+            fill="hsl(var(--destructive))"
+          />
+          <text
+            x={(from.x + to.x) / 2}
+            y={(from.y + to.y) / 2}
+            textAnchor="middle"
+            dy="4"
+            fontSize="12"
+            fill="white"
+            fontWeight="bold"
+          >
+            ×
+          </text>
+        </g>
+      </g>
+    );
   };
 
   return (
@@ -75,6 +173,18 @@ export default function FactoryFloorPlan() {
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Factory Floor Plan</h3>
           <div className="flex gap-2">
+            <Button
+              variant={linkingMode ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                setLinkingMode(!linkingMode);
+                setLinkFrom(null);
+              }}
+              data-testid="button-link-mode"
+            >
+              {linkingMode ? <Unlink className="h-4 w-4 mr-2" /> : <LinkIcon className="h-4 w-4 mr-2" />}
+              {linkingMode ? "Exit Link Mode" : "Link Stations"}
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -86,6 +196,16 @@ export default function FactoryFloorPlan() {
             </Button>
           </div>
         </div>
+
+        {linkingMode && (
+          <div className="p-3 bg-accent/10 border border-accent rounded-lg">
+            <p className="text-sm">
+              {linkFrom 
+                ? "Click on another station to create a connection, or click the same station to cancel"
+                : "Click on a station to start creating a connection"}
+            </p>
+          </div>
+        )}
 
         {/* Station palette */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
@@ -110,7 +230,7 @@ export default function FactoryFloorPlan() {
 
         {/* Canvas */}
         <div 
-          className="relative bg-muted/30 rounded-lg border-2 border-dashed border-border min-h-[400px] overflow-hidden"
+          className="relative bg-muted/30 rounded-lg border-2 border-dashed border-border min-h-[500px] overflow-hidden"
           style={{ 
             backgroundImage: 'radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)',
             backgroundSize: '20px 20px'
@@ -119,14 +239,43 @@ export default function FactoryFloorPlan() {
         >
           {stations.length === 0 && (
             <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-              <p className="text-sm">Click station buttons above to add them to your floor plan</p>
+              <p className="text-sm text-center max-w-md">
+                Click station buttons above to add them to your floor plan.<br />
+                Use "Link Stations" to create production flow connections.
+              </p>
             </div>
           )}
 
+          {/* SVG for connections */}
+          {connections.length > 0 && (
+            <svg className="absolute inset-0 w-full h-full pointer-events-none">
+              <defs>
+                <marker
+                  id="arrowhead"
+                  markerWidth="10"
+                  markerHeight="10"
+                  refX="5"
+                  refY="3"
+                  orient="auto"
+                >
+                  <polygon
+                    points="0 0, 10 3, 0 6"
+                    fill="hsl(var(--accent))"
+                  />
+                </marker>
+              </defs>
+              {connections.map(drawConnection)}
+            </svg>
+          )}
+
+          {/* Stations */}
           {stations.map((station) => {
             const stationType = stationTypes.find(s => s.type === station.type);
             if (!stationType) return null;
             const Icon = stationType.icon;
+
+            const isLinkSource = linkFrom === station.id;
+            const canLinkTo = linkingMode && linkFrom !== null && linkFrom !== station.id;
 
             return (
               <Draggable
@@ -134,31 +283,42 @@ export default function FactoryFloorPlan() {
                 position={{ x: station.x, y: station.y }}
                 onStop={(_, data) => handleDrag(station.id, data)}
                 bounds="parent"
+                disabled={linkingMode}
               >
                 <div 
-                  className="absolute cursor-move group"
+                  className={cn(
+                    "absolute cursor-move group",
+                    linkingMode && "cursor-pointer",
+                    isLinkSource && "ring-4 ring-accent"
+                  )}
+                  onClick={() => handleStationClick(station.id)}
                   data-testid={`station-${station.id}`}
                 >
-                  <Card className="p-3 hover-elevate">
-                    <div className="flex items-center gap-2">
+                  <Card className={cn(
+                    "p-3 hover-elevate",
+                    canLinkTo && "ring-2 ring-accent/50"
+                  )}>
+                    <div className="flex items-center gap-2 w-36">
                       <div className={cn("p-2 rounded", stationType.color)}>
                         <Icon className="h-4 w-4 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium truncate">{station.name}</p>
                       </div>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-6 w-6 opacity-0 group-hover:opacity-100"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRemoveStation(station.id);
-                        }}
-                        data-testid={`button-remove-${station.id}`}
-                      >
-                        <span className="text-destructive">×</span>
-                      </Button>
+                      {!linkingMode && (
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveStation(station.id);
+                          }}
+                          data-testid={`button-remove-${station.id}`}
+                        >
+                          <span className="text-destructive">×</span>
+                        </Button>
+                      )}
                     </div>
                   </Card>
                 </div>
@@ -167,9 +327,10 @@ export default function FactoryFloorPlan() {
           })}
         </div>
 
-        <p className="text-xs text-muted-foreground">
-          {stations.length} station{stations.length !== 1 ? 's' : ''} placed
-        </p>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <p>{stations.length} station{stations.length !== 1 ? 's' : ''} placed</p>
+          <p>{connections.length} connection{connections.length !== 1 ? 's' : ''} created</p>
+        </div>
       </div>
     </Card>
   );
