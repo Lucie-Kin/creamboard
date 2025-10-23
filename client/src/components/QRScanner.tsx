@@ -19,11 +19,17 @@ export default function QRScanner({ onScan, onClose, title = "Scan QR Code" }: Q
   const [error, setError] = useState<string | null>(null);
 
   const startCamera = async () => {
-    if (cameraStarted || !scannerRef.current) return;
+    if (cameraStarted) return;
     
     try {
       setError(null);
-      const scanner = scannerRef.current;
+      setCameraStarted(true);
+      
+      // Wait for next tick to ensure DOM element exists
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const scanner = new Html5Qrcode("qr-reader");
+      scannerRef.current = scanner;
       
       await scanner.start(
         { facingMode: "environment" },
@@ -40,7 +46,6 @@ export default function QRScanner({ onScan, onClose, title = "Scan QR Code" }: Q
         }
       );
       setIsScanning(true);
-      setCameraStarted(true);
     } catch (err) {
       console.error("Scanner error:", err);
       setError("Camera access denied or not available. Please use manual entry below.");
@@ -48,12 +53,9 @@ export default function QRScanner({ onScan, onClose, title = "Scan QR Code" }: Q
   };
 
   useEffect(() => {
-    const scanner = new Html5Qrcode("qr-reader");
-    scannerRef.current = scanner;
-
     return () => {
-      if (scanner.isScanning) {
-        scanner.stop().catch(console.error);
+      if (scannerRef.current?.isScanning) {
+        scannerRef.current.stop().catch(console.error);
       }
     };
   }, []);
@@ -83,9 +85,10 @@ export default function QRScanner({ onScan, onClose, title = "Scan QR Code" }: Q
         <Card className="w-full max-w-sm overflow-hidden">
           {!cameraStarted ? (
             <div className="p-8 text-center space-y-4">
-              <div className="mx-auto w-32 h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-border hover-elevate active-elevate-2 cursor-pointer"
-                   onClick={startCamera}
-                   data-testid="button-start-camera"
+              <div 
+                className="mx-auto w-32 h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-border hover-elevate active-elevate-2 cursor-pointer"
+                onClick={startCamera}
+                data-testid="button-start-camera"
               >
                 <Camera className="h-12 w-12 text-muted-foreground" />
               </div>
