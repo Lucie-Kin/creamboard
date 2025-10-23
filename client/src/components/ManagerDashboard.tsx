@@ -30,6 +30,7 @@ import AlertCard from "./AlertCard";
 import TrafficLightIndicator from "./TrafficLightIndicator";
 import NotificationPanel from "./NotificationPanel";
 import ProductionFlowVisualization from "./ProductionFlowVisualization";
+import ProductionTimeline from "./ProductionTimeline";
 import {
   initializeProduction,
   updateAllBatches,
@@ -63,9 +64,11 @@ export default function ManagerDashboard() {
   const [cardOrder, setCardOrder] = useState<string[]>([
     "stats",
     "alerts",
+    "production-timeline",
     "production-flow",
     "recent-batches"
   ]);
+  const [viewMode, setViewMode] = useState<"timeline" | "flow">("timeline");
 
   // Initialize production data
   useEffect(() => {
@@ -194,6 +197,7 @@ export default function ManagerDashboard() {
         ))}
       </div>
     ) : <div />,
+    "production-timeline": <ProductionTimeline batches={filteredBatches} />,
     "production-flow": <ProductionFlowVisualization batches={filteredBatches} />,
     "recent-batches": (
       <Card className="p-6">
