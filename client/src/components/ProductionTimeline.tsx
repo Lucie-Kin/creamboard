@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Flag, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import StationFocusPanel from "./StationFocusPanel";
 import type { ProductionBatch } from "@/lib/mockData";
 
 interface ProductionTimelineProps {
@@ -20,6 +21,7 @@ export default function ProductionTimeline({ batches, stationSequence }: Product
     const saved = localStorage.getItem('timeline-cursor-position');
     return saved ? parseInt(saved, 10) : 0;
   });
+  const [showFocusPanel, setShowFocusPanel] = useState(true);
 
   // Default station sequence if not provided from floor plan
   const stations = stationSequence || [
@@ -51,6 +53,7 @@ export default function ProductionTimeline({ batches, stationSequence }: Product
 
   const handleSetCursor = (stationIndex: number) => {
     setCursorPosition(stationIndex);
+    setShowFocusPanel(true); // Show focus panel when cursor is set
     if (scrollContainerRef.current) {
       const columnWidth = 120;
       scrollContainerRef.current.scrollTo({
@@ -154,25 +157,48 @@ export default function ProductionTimeline({ batches, stationSequence }: Product
   };
 
   return (
-    <Card className="p-6">
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold">Production Timeline</h3>
-            <p className="text-sm text-muted-foreground">
-              Each square = {PRODUCTS_PER_SQUARE} products • Click station headers to set focus cursor
-            </p>
+    <div className="space-y-4">
+      {/* Focus Panel - appears when cursor is set and panel is visible */}
+      {showFocusPanel && cursorPosition >= 0 && (
+        <StationFocusPanel
+          stationName={stations[cursorPosition]}
+          batches={batches}
+          onClose={() => setShowFocusPanel(false)}
+        />
+      )}
+
+      <Card className="p-6">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">Production Timeline</h3>
+              <p className="text-sm text-muted-foreground">
+                Each square = {PRODUCTS_PER_SQUARE} products • Click station headers to set focus cursor
+              </p>
+            </div>
+            <div className="flex gap-2">
+              {!showFocusPanel && cursorPosition >= 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowFocusPanel(true)}
+                  data-testid="button-show-focus"
+                >
+                  <Flag className="h-4 w-4 mr-2" />
+                  Show Focus
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResetCursor}
+                data-testid="button-reset-cursor"
+              >
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Reset Cursor
+              </Button>
+            </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleResetCursor}
-            data-testid="button-reset-cursor"
-          >
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Reset Cursor
-          </Button>
-        </div>
 
         {/* Timeline Container */}
         <div className="border rounded-lg overflow-hidden">
@@ -233,5 +259,6 @@ export default function ProductionTimeline({ batches, stationSequence }: Product
         </div>
       </div>
     </Card>
+    </div>
   );
 }
