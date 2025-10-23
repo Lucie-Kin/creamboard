@@ -269,12 +269,12 @@ export default function ManagerDashboard() {
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
-                size="lg"
+                size="icon"
                 className="relative"
                 onClick={() => setShowNotifications(!showNotifications)}
                 data-testid="button-notifications"
               >
-                <Bell className="h-6 w-6" />
+                <Bell className="h-5 w-5" />
                 {openTicketsCount > 0 && (
                   <Badge 
                     variant="destructive" 
@@ -287,90 +287,92 @@ export default function ManagerDashboard() {
             </div>
           </header>
 
-          <main className="flex-1 overflow-auto p-6 space-y-6">
-            {activePage === "dashboard" && (
-              <>
-                {/* Search Bar */}
-                <SearchBar
-                  onSearch={setSearchQuery}
-                  filters={filters}
-                  onFilterRemove={(filter) => setFilters(filters.filter(f => f !== filter))}
-                  onClearAll={() => setFilters([])}
-                />
+          <main className="flex-1 overflow-auto">
+            <div className="max-w-7xl mx-auto p-6 space-y-6">
+              {activePage === "dashboard" && (
+                <>
+                  {/* Search Bar */}
+                  <SearchBar
+                    onSearch={setSearchQuery}
+                    filters={filters}
+                    onFilterRemove={(filter) => setFilters(filters.filter(f => f !== filter))}
+                    onClearAll={() => setFilters([])}
+                  />
 
-                {/* Draggable Dashboard Cards */}
-                <div className="space-y-6">
-                  {cardOrder.map((cardId, index) => (
-                    <div key={cardId} className="relative group">
-                      {/* Drag Handle */}
-                      <div className="absolute -left-8 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="flex flex-col gap-1">
-                          {index > 0 && (
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-6 w-6"
-                              onClick={() => swapCards(index, index - 1)}
-                              data-testid={`button-move-up-${cardId}`}
-                            >
-                              ▲
-                            </Button>
-                          )}
-                          <GripVertical className="h-5 w-5 text-muted-foreground" />
-                          {index < cardOrder.length - 1 && (
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-6 w-6"
-                              onClick={() => swapCards(index, index + 1)}
-                              data-testid={`button-move-down-${cardId}`}
-                            >
-                              ▼
-                            </Button>
-                          )}
+                  {/* Draggable Dashboard Cards */}
+                  <div className="space-y-6">
+                    {cardOrder.map((cardId, index) => (
+                      <div key={cardId} className="relative group">
+                        {/* Drag Handle */}
+                        <div className="absolute -left-8 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex flex-col gap-1">
+                            {index > 0 && (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6"
+                                onClick={() => swapCards(index, index - 1)}
+                                data-testid={`button-move-up-${cardId}`}
+                              >
+                                ▲
+                              </Button>
+                            )}
+                            <GripVertical className="h-5 w-5 text-muted-foreground" />
+                            {index < cardOrder.length - 1 && (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6"
+                                onClick={() => swapCards(index, index + 1)}
+                                data-testid={`button-move-down-${cardId}`}
+                              >
+                                ▼
+                              </Button>
+                            )}
+                          </div>
                         </div>
+                        {dashboardCards[cardId]}
                       </div>
-                      {dashboardCards[cardId]}
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {activePage === "floor-plan" && (
+                <FactoryFloorPlan />
+              )}
+
+              {activePage === "settings" && (
+                <Card className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Alert Settings</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">
+                        Alert Threshold (number of red statuses)
+                      </label>
+                      <input
+                        type="number"
+                        defaultValue={3}
+                        className="mt-2 w-full max-w-xs px-3 py-2 border rounded-lg"
+                        data-testid="input-threshold"
+                      />
                     </div>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {activePage === "floor-plan" && (
-              <FactoryFloorPlan />
-            )}
-
-            {activePage === "settings" && (
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Alert Settings</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">
-                      Alert Threshold (number of red statuses)
-                    </label>
-                    <input
-                      type="number"
-                      defaultValue={3}
-                      className="mt-2 w-full max-w-xs px-3 py-2 border rounded-lg"
-                      data-testid="input-threshold"
-                    />
+                    <div>
+                      <label className="text-sm font-medium">
+                        Products per Batch (average)
+                      </label>
+                      <input
+                        type="number"
+                        defaultValue={300}
+                        className="mt-2 w-full max-w-xs px-3 py-2 border rounded-lg"
+                        data-testid="input-batch-size"
+                      />
+                    </div>
+                    <Button data-testid="button-save-settings">Save Settings</Button>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium">
-                      Products per Batch (average)
-                    </label>
-                    <input
-                      type="number"
-                      defaultValue={300}
-                      className="mt-2 w-full max-w-xs px-3 py-2 border rounded-lg"
-                      data-testid="input-batch-size"
-                    />
-                  </div>
-                  <Button data-testid="button-save-settings">Save Settings</Button>
-                </div>
-              </Card>
-            )}
+                </Card>
+              )}
+            </div>
           </main>
         </div>
       </div>
