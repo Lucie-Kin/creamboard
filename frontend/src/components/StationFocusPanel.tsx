@@ -161,7 +161,7 @@ export default function StationFocusPanel({
   onClose 
 }: StationFocusPanelProps) {
   const stationBatches = batches.filter(b => 
-    b.currentStation.toLowerCase() === stationName.toLowerCase()
+    b.currentStation?.toLowerCase() === stationName.toLowerCase()
   );
 
   const metrics = getStationMetrics(stationName);

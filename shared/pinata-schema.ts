@@ -81,6 +81,8 @@ export const batchDataSchema = z.object({
   currentStation: z.string().optional(),
   status: z.enum(["green", "yellow", "red"]),
   timestamp: z.string().datetime(),
+  productsInBatch: z.number().default(0),
+  productsCompleted: z.number().default(0),
   metadata: tokenMetadataSchema.optional(), // Full token metadata
 });
 
@@ -158,6 +160,8 @@ export function tokenToBatchData(token: TokenMetadata): BatchData | null {
     const productAttr = token.attributes.find(attr => attr.trait_type === "productName");
     const stationAttr = token.attributes.find(attr => attr.trait_type === "currentStation");
     const statusAttr = token.attributes.find(attr => attr.trait_type === "status");
+    const productsInBatchAttr = token.attributes.find(attr => attr.trait_type === "productsInBatch");
+    const productsCompletedAttr = token.attributes.find(attr => attr.trait_type === "productsCompleted");
     
     if (!batchAttr) return null;
     
@@ -168,6 +172,8 @@ export function tokenToBatchData(token: TokenMetadata): BatchData | null {
       currentStation: stationAttr ? String(stationAttr.value) : undefined,
       status: (statusAttr?.value as BatchData['status']) || "green",
       timestamp: new Date().toISOString(),
+      productsInBatch: productsInBatchAttr ? Number(productsInBatchAttr.value) : 0,
+      productsCompleted: productsCompletedAttr ? Number(productsCompletedAttr.value) : 0,
       metadata: token,
     };
   } catch (error) {
