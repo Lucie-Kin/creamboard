@@ -92,6 +92,17 @@ export const insertAlertSchema = createInsertSchema(alerts).omit({ id: true, tim
 export type InsertAlert = z.infer<typeof insertAlertSchema>;
 export type Alert = typeof alerts.$inferSelect;
 
+// Floor Plan schema
+export const floorPlans = pgTable("floor_plans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  data: text("data").notNull(), // JSON string containing stations and connections
+  savedAt: timestamp("saved_at").notNull().defaultNow(),
+});
+
+export const insertFloorPlanSchema = createInsertSchema(floorPlans).omit({ id: true, savedAt: true });
+export type InsertFloorPlan = z.infer<typeof insertFloorPlanSchema>;
+export type FloorPlan = typeof floorPlans.$inferSelect;
+
 // User schema (keep existing)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
