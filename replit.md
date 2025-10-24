@@ -20,6 +20,15 @@ The system uses a traffic light status system (green/yellow/red) for immediate s
 
 Preferred communication style: Simple, everyday language.
 
+## Directory Structure
+
+**IMPORTANT:** This project has two separate code stacks:
+
+1. **server/ + client/** - Replit development environment (runs with `npm run dev`)
+2. **backend/ + frontend/** - Docker deployment (runs in containers via docker-compose)
+
+Changes must be made to **backend/** and **frontend/** directories for Docker deployment to work correctly. The server/ and client/ directories are only for local Replit development.
+
 ## System Architecture
 
 ### Frontend Architecture

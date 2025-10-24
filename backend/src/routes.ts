@@ -636,38 +636,55 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
   // ==================== STARTUP INITIALIZATION ====================
   
   /**
-   * Auto-load test data from Pinata on startup
+   * Auto-load data from Pinata NFT on startup
+   * Extracts Provider data from the second file in the NFT
    */
   async function initializeData() {
-    console.log("🔄 Loading test data from Pinata...");
+    console.log("🔄 Loading data from Pinata NFT...");
     
     try {
-      // Hardcoded test data URL
-      const testDataUrl = "https://gateway.pinata.cloud/ipfs/bafkreib2sr2lsaqtsxsxkgpgcajxh5henxuc7v7uffo7eplnf3vvqxpwem";
+      // Hardcoded Pinata NFT URL (Solana metadata wrapper)
+      const nftUrl = "https://gateway.pinata.cloud/ipfs/bafkreib2sr2lsaqtsxsxkgpgcajxh5henxuc7v7uffo7eplnf3vvqxpwem";
       
-      console.log(`📥 Fetching data from: ${testDataUrl}`);
-      const response = await fetch(testDataUrl);
+      console.log("📥 Fetching NFT metadata...");
+      const nftResponse = await fetch(nftUrl);
       
-      if (!response.ok) {
-        console.error(`❌ Failed to fetch test data: ${response.statusText}`);
+      if (!nftResponse.ok) {
+        console.error(`❌ Failed to fetch NFT metadata: ${nftResponse.statusText}`);
         return;
       }
       
-      const data = await response.json();
-      console.log("✅ Test data fetched successfully");
-      console.log("📋 Data content:", JSON.stringify(data, null, 2));
+      const nftData = await nftResponse.json() as any;
       
-      // Try to parse as provider data
-      const provider = tokenToProviderData(data);
-      if (provider) {
-        await storage.addProvider(provider);
-        console.log(`✅ Loaded provider: ${provider.name}`);
+      // Extract provider data from properties.files[1]
+      if (nftData.properties && Array.isArray(nftData.properties.files) && nftData.properties.files.length > 1) {
+        const providerFileUrl = nftData.properties.files[1].uri as string;
+        
+        console.log(`📥 Fetching provider data from: ${providerFileUrl}`);
+        const providerResponse = await fetch(providerFileUrl);
+        
+        if (!providerResponse.ok) {
+          console.error(`❌ Failed to fetch provider data: ${providerResponse.statusText}`);
+          return;
+        }
+        
+        const providerJsonData = await providerResponse.json() as any;
+        console.log(`📋 Provider data loaded: ${providerJsonData.name || 'Unknown'}`);
+        
+        // Parse as provider data
+        const provider = tokenToProviderData(providerJsonData);
+        if (provider) {
+          await storage.addProvider(provider);
+          console.log(`✅ Loaded provider: ${provider.name}`);
+        } else {
+          console.log("⚠️  Data does not match provider schema");
+        }
       } else {
-        console.log("⚠️  Data does not match provider schema");
+        console.log("⚠️  NFT does not contain provider data in properties.files[1]");
       }
       
     } catch (error) {
-      console.error("❌ Error loading test data:", error);
+      console.error("❌ Error loading data from Pinata:", error);
     }
   }
 
