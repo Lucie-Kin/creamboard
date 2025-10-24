@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Flag, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import StationFocusPanel from "./StationFocusPanel";
+import { useFloorPlan } from "@/lib/api-hooks";
 import type { BatchData } from "@shared/pinata-schema";
 
 interface ProductionTimelineProps {
@@ -27,19 +28,23 @@ export default function ProductionTimeline({
     return saved ? parseInt(saved, 10) : 0;
   });
   const [showFocusPanel, setShowFocusPanel] = useState(true);
+  
+  // Load floor plan if available
+  const { data: floorPlan, isLoading } = useFloorPlan();
 
-  // Default internal station sequence
-  const internalStations = stationSequence || [
-    "arrival dock",
-    "storage tanks",
-    "lab_rd",        // Updated to match schema
-    "mixing room",
-    "heating room",
-    "cooling room",
-    "packaging",
-    "storage",
-    "delivery dock"
-  ];
+  // Extract station sequence from floor plan
+  let internalStations: string[];
+  
+  if (stationSequence) {
+    // Use prop if provided
+    internalStations = stationSequence;
+  } else if (floorPlan?.stations && floorPlan.stations.length > 0) {
+    // Use floor plan stations
+    internalStations = floorPlan.stations.map((s: any) => s.name);
+  } else {
+    // Default: single production box
+    internalStations = ["Production"];
+  }
 
   // Extended supply chain sequence: Providers → Internal Stations → Transporters → Distributors
   const stations = showExtendedSupplyChain
