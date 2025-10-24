@@ -169,7 +169,7 @@ export default function ManagerDashboard() {
         ))}
       </div>
     ) : <div />,
-    "production-timeline": <ProductionTimeline batches={filteredBatches} />,
+    "production-timeline": <ProductionTimeline batches={filteredBatches} productsPerSquare={productsPerSquare} />,
     "production-flow": <ProductionFlowVisualization batches={filteredBatches} />,
     "recent-batches": (
       <Card className="p-6">

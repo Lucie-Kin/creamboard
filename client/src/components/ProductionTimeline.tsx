@@ -12,16 +12,18 @@ interface ProductionTimelineProps {
   batches: BatchData[];
   stationSequence?: string[]; // From floor plan connections
   showExtendedSupplyChain?: boolean; // Show providers, transporters, distributors
+  productsPerSquare?: number; // Configurable sensitivity (default: 100)
 }
 
-const SQUARES_PER_STATION = 9; // Each station shows 9 squares (900 products max)
-const PRODUCTS_PER_SQUARE = 100;
+const SQUARES_PER_STATION = 9; // Each station shows 9 squares
 
 export default function ProductionTimeline({ 
   batches, 
   stationSequence, 
-  showExtendedSupplyChain = false 
+  showExtendedSupplyChain = false,
+  productsPerSquare = 100
 }: ProductionTimelineProps) {
+  const PRODUCTS_PER_SQUARE = productsPerSquare;
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [cursorPosition, setCursorPosition] = useState<number>(() => {
     const saved = localStorage.getItem('timeline-cursor-position');
