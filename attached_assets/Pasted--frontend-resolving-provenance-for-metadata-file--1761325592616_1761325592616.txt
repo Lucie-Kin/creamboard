@@ -1,0 +1,42 @@
+ => [frontend] resolving provenance for metadata file                                                            0.0s
+ => ERROR [backend builder 6/6] RUN npm run build                                                                1.2s
+------
+ > [backend builder 6/6] RUN npm run build:
+0.235 
+0.235 > miko-factory-backend@1.0.0 build
+0.235 > tsc && esbuild src/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+0.235 
+1.178 src/storage.ts(87,9): error TS2561: Object literal may only specify known properties, but 'position' does not exist in type '{ type: "arrival_dock" | "storage_tank" | "lab_rd" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "storage" | "delivery_dock"; name: string; ... 6 more ...; positionY?: number | undefined; }'. Did you mean to write 'positionX'?
+1.178 src/storage.ts(96,9): error TS2561: Object literal may only specify known properties, but 'position' does not exist in type '{ type: "arrival_dock" | "storage_tank" | "lab_rd" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "storage" | "delivery_dock"; name: string; ... 6 more ...; positionY?: number | undefined; }'. Did you mean to write 'positionX'?
+1.178 src/storage.ts(105,9): error TS2561: Object literal may only specify known properties, but 'position' does not exist in type '{ type: "arrival_dock" | "storage_tank" | "lab_rd" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "storage" | "delivery_dock"; name: string; ... 6 more ...; positionY?: number | undefined; }'. Did you mean to write 'positionX'?
+1.178 src/storage.ts(114,9): error TS2561: Object literal may only specify known properties, but 'position' does not exist in type '{ type: "arrival_dock" | "storage_tank" | "lab_rd" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "storage" | "delivery_dock"; name: string; ... 6 more ...; positionY?: number | undefined; }'. Did you mean to write 'positionX'?
+1.178 src/storage.ts(123,9): error TS2561: Object literal may only specify known properties, but 'position' does not exist in type '{ type: "arrival_dock" | "storage_tank" | "lab_rd" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "storage" | "delivery_dock"; name: string; ... 6 more ...; positionY?: number | undefined; }'. Did you mean to write 'positionX'?
+1.178 src/storage.ts(132,9): error TS2561: Object literal may only specify known properties, but 'position' does not exist in type '{ type: "arrival_dock" | "storage_tank" | "lab_rd" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "storage" | "delivery_dock"; name: string; ... 6 more ...; positionY?: number | undefined; }'. Did you mean to write 'positionX'?
+1.178 src/storage.ts(141,9): error TS2561: Object literal may only specify known properties, but 'position' does not exist in type '{ type: "arrival_dock" | "storage_tank" | "lab_rd" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "storage" | "delivery_dock"; name: string; ... 6 more ...; positionY?: number | undefined; }'. Did you mean to write 'positionX'?
+1.178 src/storage.ts(150,9): error TS2561: Object literal may only specify known properties, but 'position' does not exist in type '{ type: "arrival_dock" | "storage_tank" | "lab_rd" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "storage" | "delivery_dock"; name: string; ... 6 more ...; positionY?: number | undefined; }'. Did you mean to write 'positionX'?
+1.178 src/storage.ts(160,9): error TS2322: Type 'null' is not assignable to type 'string | undefined'.
+1.198 npm notice
+1.198 npm notice New major version of npm available! 10.8.2 -> 11.6.2
+1.198 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+1.198 npm notice To update run: npm install -g npm@11.6.2
+1.198 npm notice
+------
+Dockerfile:18
+
+--------------------
+
+  16 |     COPY backend/tsconfig.json ./tsconfig.json
+
+  17 |     COPY backend/package.json ./package.json
+
+  18 | >>> RUN npm run build
+
+  19 |     
+
+  20 |     # Production image
+
+--------------------
+
+target backend: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 2
+
+make: *** [Makefile:72: docker-up] Error 1

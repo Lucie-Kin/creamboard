@@ -84,7 +84,8 @@ export class MemStorage implements IStorage {
         name: "Arrival Dock",
         type: "arrival_dock",
         enabled: true,
-        position: { x: 50, y: 100 },
+        positionX: 50,
+        positionY: 100,
         nextStation: "storage-tanks",
         order: 1
       },
@@ -93,7 +94,8 @@ export class MemStorage implements IStorage {
         name: "Storage Tanks",
         type: "storage_tank",
         enabled: true,
-        position: { x: 200, y: 100 },
+        positionX: 200,
+        positionY: 100,
         nextStation: "lab-rd",
         order: 2
       },
@@ -102,7 +104,8 @@ export class MemStorage implements IStorage {
         name: "Lab/R&D",
         type: "lab_rd",
         enabled: true,
-        position: { x: 350, y: 100 },
+        positionX: 350,
+        positionY: 100,
         nextStation: "mixing-room",
         order: 3
       },
@@ -111,7 +114,8 @@ export class MemStorage implements IStorage {
         name: "Mixing Room",
         type: "mixing_room",
         enabled: true,
-        position: { x: 500, y: 100 },
+        positionX: 500,
+        positionY: 100,
         nextStation: "heating-room",
         order: 4
       },
@@ -120,7 +124,8 @@ export class MemStorage implements IStorage {
         name: "Heating Room",
         type: "heating_room",
         enabled: true,
-        position: { x: 650, y: 100 },
+        positionX: 650,
+        positionY: 100,
         nextStation: "cooling-room",
         order: 5
       },
@@ -129,7 +134,8 @@ export class MemStorage implements IStorage {
         name: "Cooling Room",
         type: "cooling_room",
         enabled: true,
-        position: { x: 800, y: 100 },
+        positionX: 800,
+        positionY: 100,
         nextStation: "packaging",
         order: 6
       },
@@ -138,7 +144,8 @@ export class MemStorage implements IStorage {
         name: "Packaging",
         type: "packaging",
         enabled: true,
-        position: { x: 950, y: 100 },
+        positionX: 950,
+        positionY: 100,
         nextStation: "storage-final",
         order: 7
       },
@@ -147,7 +154,8 @@ export class MemStorage implements IStorage {
         name: "Final Storage",
         type: "storage",
         enabled: true,
-        position: { x: 1100, y: 100 },
+        positionX: 1100,
+        positionY: 100,
         nextStation: "delivery-dock",
         order: 8
       },
@@ -156,8 +164,9 @@ export class MemStorage implements IStorage {
         name: "Delivery Dock",
         type: "delivery_dock",
         enabled: true,
-        position: { x: 1250, y: 100 },
-        nextStation: null,
+        positionX: 1250,
+        positionY: 100,
+        nextStation: undefined,
         order: 9
       }
     ];
@@ -239,14 +248,14 @@ export class MemStorage implements IStorage {
     if (this.productionFlow) {
       // Return stations in the configured flow order
       return this.productionFlow.flowOrder
-        .map(id => this.stations.get(id))
-        .filter((s): s is StationConfig => s !== undefined && s.enabled);
+        .map((id: string) => this.stations.get(id))
+        .filter((s: StationConfig | undefined): s is StationConfig => s !== undefined && s.enabled);
     }
     
     // Fallback to order by station.order property
     return Array.from(this.stations.values())
-      .filter(s => s.enabled)
-      .sort((a, b) => a.order - b.order);
+      .filter((s: StationConfig) => s.enabled)
+      .sort((a: StationConfig, b: StationConfig) => a.order - b.order);
   }
 
   // Batch Management
