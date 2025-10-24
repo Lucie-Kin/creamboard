@@ -3,6 +3,7 @@ import Draggable from "react-draggable";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Warehouse, 
   FlaskConical, 
@@ -16,9 +17,11 @@ import {
   Link as LinkIcon,
   Unlink,
   Tractor,
-  Truck
+  Truck,
+  Save
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { apiRequest } from "@/lib/queryClient";
 
 interface Station {
   id: string;
@@ -54,6 +57,8 @@ export default function FactoryFloorPlan() {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [linkingMode, setLinkingMode] = useState(false);
   const [linkFrom, setLinkFrom] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast();
 
   const handleAddStation = (type: string) => {
     const stationType = stationTypes.find(s => s.type === type);
@@ -111,6 +116,46 @@ export default function FactoryFloorPlan() {
     setConnections([]);
     setLinkingMode(false);
     setLinkFrom(null);
+  };
+
+  const handleSaveFloorPlan = async () => {
+    if (stations.length === 0) {
+      toast({
+        title: "No stations to save",
+        description: "Please add at least one station to the floor plan before saving.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const floorPlanData = {
+        stations,
+        connections,
+        savedAt: new Date().toISOString()
+      };
+
+      await apiRequest("/api/floor-plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(floorPlanData)
+      });
+
+      toast({
+        title: "Floor plan saved!",
+        description: `Saved ${stations.length} stations and ${connections.length} connections.`
+      });
+    } catch (error) {
+      console.error("Failed to save floor plan:", error);
+      toast({
+        title: "Failed to save floor plan",
+        description: "Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const getStationCenter = (stationId: string) => {
@@ -197,6 +242,16 @@ export default function FactoryFloorPlan() {
             >
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleSaveFloorPlan}
+              disabled={isSaving || stations.length === 0}
+              data-testid="button-save-floor-plan"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? "Saving..." : "Save Floor Plan"}
             </Button>
           </div>
         </div>
