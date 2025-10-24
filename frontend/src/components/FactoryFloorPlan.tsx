@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Draggable from "react-draggable";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiRequest } from "@/lib/queryClient";
+import { useFloorPlan } from "@/lib/api-hooks";
 
 interface Station {
   id: string;
@@ -59,6 +60,17 @@ export default function FactoryFloorPlan() {
   const [linkFrom, setLinkFrom] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+  
+  // Load saved floor plan
+  const { data: savedFloorPlan, isLoading: isLoadingFloorPlan } = useFloorPlan();
+
+  // Load floor plan data on mount
+  useEffect(() => {
+    if (savedFloorPlan && savedFloorPlan.stations) {
+      setStations(savedFloorPlan.stations || []);
+      setConnections(savedFloorPlan.connections || []);
+    }
+  }, [savedFloorPlan]);
 
   const handleAddStation = (type: string) => {
     const stationType = stationTypes.find(s => s.type === type);
@@ -136,11 +148,7 @@ export default function FactoryFloorPlan() {
         savedAt: new Date().toISOString()
       };
 
-      await apiRequest("/api/floor-plan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(floorPlanData)
-      });
+      await apiRequest("POST", "/api/floor-plan", floorPlanData);
 
       toast({
         title: "Floor plan saved!",
