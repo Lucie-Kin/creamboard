@@ -25,9 +25,9 @@
     "paths": {
       "@/*": ["./src/*"],
       "@assets/*": ["./attached_assets/*"],
-      "@shared/*": ["../shared/*"]
+      "@shared/*": ["./shared/*"]
     }
   },
-  "include": ["src", "../shared"],
+  "include": ["src", "./shared"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

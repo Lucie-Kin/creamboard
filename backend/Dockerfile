@@ -11,8 +11,10 @@ RUN npm install
 # Build the application
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
-COPY backend ./
-COPY shared ../shared
+COPY shared ./shared
+COPY backend/src ./src
+COPY backend/tsconfig.json ./tsconfig.json
+COPY backend/package.json ./package.json
 RUN npm run build
 
 # Production image

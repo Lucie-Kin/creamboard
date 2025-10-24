@@ -11,8 +11,16 @@ RUN npm install
 # Build the application
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
-COPY frontend ./
-COPY shared ../shared
+COPY shared ./shared
+COPY frontend/src ./src
+COPY frontend/index.html ./index.html
+COPY frontend/vite.config.ts ./vite.config.ts
+COPY frontend/tsconfig.json ./tsconfig.json
+COPY frontend/tsconfig.node.json ./tsconfig.node.json
+COPY frontend/tailwind.config.ts ./tailwind.config.ts
+COPY frontend/postcss.config.js ./postcss.config.js
+COPY frontend/package.json ./package.json
+COPY frontend/nginx.conf ./nginx.conf
 
 # Build arguments for environment variables
 ARG VITE_API_URL=http://localhost:3001
@@ -27,7 +35,7 @@ FROM nginx:alpine AS runner
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Custom nginx config
-COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080
 
