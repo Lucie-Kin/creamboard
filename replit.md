@@ -8,6 +8,12 @@ The system uses a traffic light status system (green/yellow/red) for immediate s
 
 **Data Architecture:** Migrated from PostgreSQL to Pinata Cloud (IPFS) storage using Solana token metadata format with chained references. All mock data removed - production data loaded from user's Pinata tokens.
 
+**Auto-Loading Data (2025-10-24):** The app now automatically loads data from Pinata on startup using environment variables. Configure your Pinata CIDs in `.env` file:
+- `PINATA_BATCH_CIDS` - Comma-separated batch/production run CIDs
+- `PINATA_PROVIDER_CIDS` - Comma-separated provider (farm/supplier) CIDs  
+- `PINATA_TRANSPORTER_CIDS` - Comma-separated transporter (logistics) CIDs
+- `PINATA_DISTRIBUTOR_CIDS` - Comma-separated distributor (reseller/retailer) CIDs
+
 **Extended Supply Chain Model (2025-10-24):** System now supports complete end-to-end supply chain from providers (farms/suppliers) through production stations to transporters and distributors (resellers), enabling full traceability from source to retail.
 
 ## User Preferences
