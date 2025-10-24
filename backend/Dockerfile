@@ -15,6 +15,7 @@ COPY shared ./shared
 COPY backend/src ./src
 COPY backend/tsconfig.json ./tsconfig.json
 COPY backend/package.json ./package.json
+COPY backend/build.mjs ./build.mjs
 RUN npm run build
 
 # Production image
