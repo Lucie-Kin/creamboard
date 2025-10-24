@@ -10,10 +10,15 @@ import {
   Activity,
   Droplets,
   Gauge,
-  X
+  X,
+  MapPin,
+  Award,
+  TrendingUp as TrendingUpIcon,
+  Tractor
 } from "lucide-react";
 import ProductionFlowVisualization from "./ProductionFlowVisualization";
-import type { BatchData } from "@shared/pinata-schema";
+import { useProviders } from "@/lib/api-hooks";
+import type { BatchData } from "../../shared/pinata-schema";
 
 interface StationFocusPanelProps {
   stationName: string;
@@ -160,9 +165,22 @@ export default function StationFocusPanel({
   batches, 
   onClose 
 }: StationFocusPanelProps) {
+  // Fetch provider data from Pinata
+  const { data: providers = [] } = useProviders();
+  
   const stationBatches = batches.filter(b => 
     b.currentStation?.toLowerCase() === stationName.toLowerCase()
   );
+
+  // Check if this station is a provider
+  const isProvider = stationName.toLowerCase().includes("provider") || 
+                     stationName.toLowerCase().includes("farm") ||
+                     stationName.toLowerCase().includes("supplier");
+  
+  // Find matching provider data
+  const providerData = isProvider 
+    ? providers.find(p => stationName.toLowerCase().includes(p.name.toLowerCase()))
+    : null;
 
   const metrics = getStationMetrics(stationName);
 
@@ -190,9 +208,63 @@ export default function StationFocusPanel({
           </Button>
         </div>
 
-        {/* Station Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {metrics.map((metric, index) => {
+        {/* Provider Details (if this station is a provider) */}
+        {providerData && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="p-4 bg-accent/5">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <MapPin className="h-4 w-4" />
+                  <span>Location</span>
+                </div>
+                <p className="text-lg font-semibold">{providerData.address}</p>
+                <p className="text-xs text-muted-foreground italic">
+                  {providerData.distanceKm} km from factory
+                </p>
+              </div>
+            </Card>
+
+            <Card className="p-4 bg-accent/5">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Award className="h-4 w-4" />
+                  <span>Certifications</span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {providerData.certifications.map((cert: string, i: number) => (
+                    <Badge key={i} variant="outline" className="text-xs">
+                      {cert}
+                    </Badge>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground italic">
+                  Verified quality standards
+                </p>
+              </div>
+            </Card>
+
+            <Card className="p-4 bg-accent/5">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <TrendingUpIcon className="h-4 w-4" />
+                  <span>Audit Score</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-2xl font-bold text-success">{providerData.conditions.lastAudit ? providerData.conditions.score : 'N/A'}</p>
+                  {providerData.conditions.score && <span className="text-sm text-muted-foreground">/100</span>}
+                </div>
+                <p className="text-xs text-muted-foreground italic">
+                  Last audit: {providerData.conditions.lastAudit ? new Date(providerData.conditions.lastAudit).toLocaleDateString() : 'N/A'}
+                </p>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Station Metrics Grid (for factory stations) */}
+        {!providerData && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {metrics.map((metric, index) => {
             const Icon = metric.icon;
             const trendIcon = metric.trend === "up" 
               ? TrendingUp 
@@ -223,8 +295,9 @@ export default function StationFocusPanel({
                 </div>
               </Card>
             );
-          })}
-        </div>
+            })}
+          </div>
+        )}
 
         {/* AI Insight Banner */}
         <div className="p-4 bg-accent/10 border border-accent rounded-lg">
@@ -237,15 +310,17 @@ export default function StationFocusPanel({
             <div className="flex-1 space-y-1">
               <p className="text-sm font-medium">AI Performance Analysis</p>
               <p className="text-sm text-muted-foreground">
-                {stationName.toLowerCase().includes("heating") && 
+                {isProvider && providerData && 
+                  `${providerData.name} maintains excellent quality standards with a ${providerData.conditions.score}/100 audit score. Certifications ${providerData.certifications.join(', ')} ensure compliance. Production capacity of ${providerData.productionCapacity} meets current demand efficiently.`}
+                {!isProvider && stationName.toLowerCase().includes("heating") && 
                   "Temperature stability has improved 2.3% this month. Factory D implemented automated climate control with 15% energy savings - worth exploring for Q2."}
-                {stationName.toLowerCase().includes("cooling") && 
+                {!isProvider && stationName.toLowerCase().includes("cooling") && 
                   "Compressor efficiency declining slightly. Factory B upgraded to variable-speed compressors last quarter, achieving 12% energy reduction and faster cool-down times."}
-                {stationName.toLowerCase().includes("mixing") && 
+                {!isProvider && stationName.toLowerCase().includes("mixing") && 
                   "Mixing consistency is excellent. Current batch times align with best-in-class performance. No optimization recommendations at this time."}
-                {stationName.toLowerCase().includes("packaging") && 
+                {!isProvider && stationName.toLowerCase().includes("packaging") && 
                   "Line running exceptionally well. Factory C recently installed new heat-sealing equipment reducing downtime by 40%. Consider for next equipment refresh cycle."}
-                {!stationName.toLowerCase().includes("heating") && 
+                {!isProvider && !stationName.toLowerCase().includes("heating") && 
                  !stationName.toLowerCase().includes("cooling") && 
                  !stationName.toLowerCase().includes("mixing") && 
                  !stationName.toLowerCase().includes("packaging") &&
