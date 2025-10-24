@@ -1,0 +1,46 @@
+ => CACHED [backend deps 2/2] RUN npm install                                                                                                                                  0.0s
+ => CACHED [backend builder 1/3] COPY --from=deps /app/node_modules ./node_modules                                                                                             0.0s
+ => [backend builder 2/3] COPY . .                                                                                                                                             0.0s
+ => CACHED [frontend deps 1/2] COPY package*.json ./                                                                                                                           0.0s
+ => CACHED [frontend deps 2/2] RUN npm install                                                                                                                                 0.0s
+ => CACHED [frontend builder 1/3] COPY --from=deps /app/node_modules ./node_modules                                                                                            0.0s
+ => [frontend builder 2/3] COPY . .                                                                                                                                            0.0s
+ => ERROR [backend builder 3/3] RUN npm run build                                                                                                                              1.2s
+ => CANCELED [frontend builder 3/3] RUN npm run build                                                                                                                          1.2s
+------                                                                                                                                                                              
+ > [backend builder 3/3] RUN npm run build:                                                                                                                                         
+0.354                                                                                                                                                                               
+0.354 > miko-factory-backend@1.0.0 build
+0.354 > tsc && esbuild src/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+0.354 
+1.143 src/routes.ts(18,8): error TS2307: Cannot find module '@shared/pinata-schema' or its corresponding type declarations.
+1.143 src/services/pinata.ts(6,52): error TS2307: Cannot find module '@shared/pinata-schema' or its corresponding type declarations.
+1.143 src/services/pinata.ts(87,28): error TS7006: Parameter 'token' implicitly has an 'any' type.
+1.143 src/storage.ts(12,8): error TS2307: Cannot find module '@shared/pinata-schema' or its corresponding type declarations.
+1.144 src/storage.ts(95,14): error TS7006: Parameter 'id' implicitly has an 'any' type.
+1.144 src/storage.ts(96,18): error TS7006: Parameter 's' implicitly has an 'any' type.
+1.156 npm notice
+1.156 npm notice New major version of npm available! 10.8.2 -> 11.6.2
+1.156 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+1.156 npm notice To update run: npm install -g npm@11.6.2
+1.156 npm notice
+------
+Dockerfile:15
+
+--------------------
+
+  13 |     COPY --from=deps /app/node_modules ./node_modules
+
+  14 |     COPY . .
+
+  15 | >>> RUN npm run build
+
+  16 |     
+
+  17 |     # Production image
+
+--------------------
+
+target backend: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 2
+
+make: *** [Makefile:72: docker-up] Error 1

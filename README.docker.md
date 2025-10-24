@@ -8,9 +8,10 @@ This project uses a **separated client-server architecture** optimized for Docke
 .
 ├── backend/              # Node.js/Express API server
 │   ├── src/
+│   │   ├── services/    # Pinata IPFS service
 │   │   ├── index.ts     # Server entry point
-│   │   ├── routes.ts    # API routes
-│   │   └── storage.ts   # Data storage layer
+│   │   ├── routes.ts    # API routes (Pinata-backed)
+│   │   └── storage.ts   # Data storage layer (Pinata cache)
 │   ├── Dockerfile
 │   ├── package.json
 │   └── tsconfig.json
@@ -25,14 +26,15 @@ This project uses a **separated client-server architecture** optimized for Docke
 │   ├── package.json
 │   └── vite.config.ts
 │
-├── shared/               # Shared TypeScript types
-│   └── schema.ts
+├── shared/               # Shared TypeScript types (used by both backend/frontend)
+│   ├── pinata-schema.ts # Pinata/Solana token metadata types
+│   └── schema.ts        # Legacy database schema
 │
-├── solana/              # Your Solana program files (add your files here)
-│
-├── docker-compose.yml
+├── docker-compose.yml    # Docker orchestration (context: root directory)
 └── Makefile
 ```
+
+**Note**: The Docker build context is set to the root directory (`.`) to allow both backend and frontend to access the `shared/` directory during builds.
 
 ## 🚀 Quick Start
 

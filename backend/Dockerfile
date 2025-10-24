@@ -5,13 +5,14 @@ WORKDIR /app
 
 # Install dependencies only when needed
 FROM base AS deps
-COPY package*.json ./
+COPY backend/package*.json ./
 RUN npm install
 
 # Build the application
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY backend ./
+COPY shared ../shared
 RUN npm run build
 
 # Production image

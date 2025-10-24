@@ -5,13 +5,14 @@ WORKDIR /app
 
 # Install dependencies only when needed
 FROM base AS deps
-COPY package*.json ./
+COPY frontend/package*.json ./
 RUN npm install
 
 # Build the application
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY frontend ./
+COPY shared ../shared
 
 # Build arguments for environment variables
 ARG VITE_API_URL=http://localhost:3001
