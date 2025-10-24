@@ -22,6 +22,7 @@ import AlertCard from "./AlertCard";
 import TaskItem from "./TaskItem";
 import QRScanner from "./QRScanner";
 import { cn } from "@/lib/utils";
+import { useUnacknowledgedAlerts, useAcknowledgeAlert } from "@/lib/api-hooks";
 
 interface OperatorDashboardProps {
   operatorName: string;
@@ -48,26 +49,21 @@ export default function OperatorDashboard({
   const [selfDiagnosisStatus, setSelfDiagnosisStatus] = useState<string>("green");
   const [notes, setNotes] = useState("");
 
-  // todo: remove mock functionality
-  const mockAlerts = [
-    {
-      id: '1',
-      type: 'Maintenance Required',
-      message: 'Last check-up more than 2 days ago on Tank 4',
-      priority: 'high' as const,
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      stationName: 'Storage Tank 4'
-    },
-    {
-      id: '2',
-      type: 'Material Change',
-      message: 'Cleaning brand has been changed - please provide input',
-      priority: 'medium' as const,
-      timestamp: new Date(Date.now() - 30 * 60 * 1000),
-      stationName: 'Your Station'
-    }
-  ];
+  // Fetch real alerts from Pinata-backed API (NO MOCK DATA)
+  const { data: apiAlerts = [], isLoading: alertsLoading } = useUnacknowledgedAlerts();
+  const acknowledgeMutation = useAcknowledgeAlert();
 
+  // Convert API alerts to display format
+  const alerts = apiAlerts.map(alert => ({
+    id: alert.id,
+    type: alert.type,
+    message: alert.message,
+    priority: alert.priority,
+    timestamp: new Date(alert.timestamp),
+    stationName: alert.stationId || "Unknown Station"
+  }));
+
+  // Placeholder for tasks - TODO: Load from backend
   const mockTasks = [
     {
       id: '1',
@@ -85,7 +81,6 @@ export default function OperatorDashboard({
     }
   ];
 
-  const [alerts, setAlerts] = useState(mockAlerts);
   const [tasks, setTasks] = useState(mockTasks);
 
   const handleSubmitDiagnosis = () => {
@@ -105,6 +100,17 @@ export default function OperatorDashboard({
       setCurrentPage(pages[currentPageIndex - 1].id);
     }
   };
+
+  if (alertsLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg">Loading operator dashboard...</p>
+          <p className="text-sm text-muted-foreground mt-2">Fetching alerts from Pinata...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col max-w-md mx-auto">
@@ -171,8 +177,8 @@ export default function OperatorDashboard({
                   <AlertCard
                     key={alert.id}
                     {...alert}
-                    onDismiss={(id) => setAlerts(alerts.filter(a => a.id !== id))}
-                    onAcknowledge={(id) => console.log('Acknowledged:', id)}
+                    onDismiss={(id) => acknowledgeMutation.mutate(id)}
+                    onAcknowledge={(id) => acknowledgeMutation.mutate(id)}
                   />
                 ))
               )}

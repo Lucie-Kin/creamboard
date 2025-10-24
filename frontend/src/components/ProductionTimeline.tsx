@@ -5,10 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Flag, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import StationFocusPanel from "./StationFocusPanel";
-import type { ProductionBatch } from "@/lib/mockData";
+import type { BatchData } from "@shared/pinata-schema";
 
 interface ProductionTimelineProps {
-  batches: ProductionBatch[];
+  batches: BatchData[];
   stationSequence?: string[]; // From floor plan connections
 }
 
@@ -70,9 +70,9 @@ export default function ProductionTimeline({ batches, stationSequence }: Product
     }
   };
 
-  const renderBatchRow = (batch: ProductionBatch) => {
+  const renderBatchRow = (batch: BatchData) => {
     const stationIndex = stations.findIndex(s => 
-      s.toLowerCase() === batch.currentStation.toLowerCase()
+      s.toLowerCase() === (batch.currentStation || '').toLowerCase()
     );
     
     const squares: JSX.Element[] = [];
@@ -88,8 +88,9 @@ export default function ProductionTimeline({ batches, stationSequence }: Product
           // Past stations - all filled
           isFilled = true;
         } else if (i === stationIndex) {
-          // Current station - partially filled based on progress
-          isFilled = productsAtThisSquare < batch.productsCompleted;
+          // Current station - partially filled (approximate progress)
+          // TODO: Get actual product counts from Pinata data when available
+          isFilled = j < 5; // Approximate: fill ~half the squares
         }
         // Future stations - empty
         

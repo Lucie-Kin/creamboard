@@ -31,15 +31,8 @@ import TrafficLightIndicator from "./TrafficLightIndicator";
 import NotificationPanel from "./NotificationPanel";
 import ProductionFlowVisualization from "./ProductionFlowVisualization";
 import ProductionTimeline from "./ProductionTimeline";
-import {
-  initializeProduction,
-  updateAllBatches,
-  addBatchToProduction,
-  getAllActiveBatches,
-  generateRandomTicket,
-  type Ticket,
-  type ProductionBatch
-} from "@/lib/mockData";
+import { useStations, useBatches, useAlerts } from "@/lib/api-hooks";
+import type { StationConfig, BatchData, AlertData } from "@shared/pinata-schema";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -59,8 +52,6 @@ export default function ManagerDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<string[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [batches, setBatches] = useState<ProductionBatch[]>([]);
   const [cardOrder, setCardOrder] = useState<string[]>([
     "stats",
     "alerts",
@@ -70,56 +61,19 @@ export default function ManagerDashboard() {
   ]);
   const [viewMode, setViewMode] = useState<"timeline" | "flow">("timeline");
 
-  // Initialize production data
-  useEffect(() => {
-    initializeProduction();
-    setBatches(getAllActiveBatches());
-
-    // Generate initial tickets
-    const initialTickets: Ticket[] = [];
-    for (let i = 0; i < 3; i++) {
-      initialTickets.push(generateRandomTicket());
-    }
-    setTickets(initialTickets);
-
-    // Update batches every 2 seconds (simulating 0.5 batches/second = 40 products/second with avg 80 products/batch)
-    const batchInterval = setInterval(() => {
-      setBatches(updateAllBatches());
-    }, 2000);
-
-    // Add new batch every 10 seconds
-    const addBatchInterval = setInterval(() => {
-      addBatchToProduction();
-      setBatches(getAllActiveBatches());
-    }, 10000);
-
-    // Randomly generate new tickets
-    const ticketInterval = setInterval(() => {
-      if (Math.random() > 0.7) {
-        setTickets(prev => [...prev, generateRandomTicket()]);
-      }
-    }, 30000);
-
-    return () => {
-      clearInterval(batchInterval);
-      clearInterval(addBatchInterval);
-      clearInterval(ticketInterval);
-    };
-  }, []);
+  // Fetch data from Pinata-based API (NO MOCK DATA)
+  const { data: stations = [], isLoading: stationsLoading } = useStations();
+  const { data: batches = [], isLoading: batchesLoading } = useBatches();
+  const { data: alerts = [], isLoading: alertsLoading } = useAlerts();
 
   const handleAssignTicket = (ticketId: string, operatorId: string, response: string) => {
-    setTickets(prev => prev.map(t => 
-      t.id === ticketId 
-        ? { ...t, status: "assigned", assignedTo: operatorId, managerResponse: response }
-        : t
-    ));
-    console.log('Assigned ticket', ticketId, 'to', operatorId);
+    // TODO: Use mutation to update ticket/alert
+    console.log('Assigning ticket', ticketId, 'to', operatorId, 'with response:', response);
   };
 
   const handleResolveTicket = (ticketId: string) => {
-    setTickets(prev => prev.map(t => 
-      t.id === ticketId ? { ...t, status: "resolved" } : t
-    ));
+    // TODO: Use mutation to resolve ticket/alert
+    console.log('Resolving ticket', ticketId);
   };
 
   const filteredBatches = batches.filter(batch => {
@@ -139,8 +93,20 @@ export default function ManagerDashboard() {
     red: batches.filter(b => b.status === 'red').length,
   };
 
-  const recentAlerts = tickets.filter(t => t.status === 'open').slice(0, 3);
-  const openTicketsCount = tickets.filter(t => t.status === 'open').length;
+  const recentAlerts = alerts.filter(a => !a.acknowledged).slice(0, 3);
+  const openTicketsCount = alerts.filter(a => !a.acknowledged).length;
+
+  // Show loading state while fetching data
+  if (stationsLoading || batchesLoading || alertsLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="text-lg">Loading dashboard...</div>
+          <div className="text-sm text-muted-foreground mt-2">Fetching data from Pinata...</div>
+        </div>
+      </div>
+    );
+  }
 
   const swapCards = (index1: number, index2: number) => {
     const newOrder = [...cardOrder];
@@ -187,11 +153,11 @@ export default function ManagerDashboard() {
           <AlertCard
             key={alert.id}
             id={alert.id}
-            type={alert.issue}
-            message={`From ${alert.operatorName} at ${alert.station}`}
+            type={alert.type}
+            message={alert.message}
             priority={alert.priority}
-            timestamp={alert.timestamp}
-            stationName={alert.station}
+            timestamp={new Date(alert.timestamp)}
+            stationName={alert.stationId || "Unknown Station"}
             onDismiss={() => handleResolveTicket(alert.id)}
           />
         ))}
@@ -203,26 +169,35 @@ export default function ManagerDashboard() {
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Recent Batches</h3>
         <div className="space-y-2 max-h-96 overflow-auto">
-          {filteredBatches.slice(-10).reverse().map(batch => (
-            <div 
-              key={batch.id} 
-              className="flex items-center justify-between p-3 rounded-lg border hover-elevate"
-              data-testid={`batch-${batch.id}`}
-            >
-              <div className="flex-1">
-                <p className="font-mono font-medium">{batch.batchNumber}</p>
-                <p className="text-sm text-muted-foreground">{batch.productName}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {batch.productsCompleted} / {batch.productsInBatch} products
-                </p>
-              </div>
-              <TrafficLightIndicator 
-                status={batch.status} 
-                label="" 
-                size="sm"
-              />
+          {filteredBatches.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <p>No batches loaded yet</p>
+              <p className="text-sm mt-2">Load batches from Pinata to see production data</p>
             </div>
-          ))}
+          ) : (
+            filteredBatches.slice(-10).reverse().map(batch => (
+              <div 
+                key={batch.id} 
+                className="flex items-center justify-between p-3 rounded-lg border hover-elevate"
+                data-testid={`batch-${batch.id}`}
+              >
+                <div className="flex-1">
+                  <p className="font-mono font-medium">{batch.batchNumber}</p>
+                  <p className="text-sm text-muted-foreground">{batch.productName}</p>
+                  {batch.currentStation && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Current station: {batch.currentStation}
+                    </p>
+                  )}
+                </div>
+                <TrafficLightIndicator 
+                  status={batch.status} 
+                  label="" 
+                  size="sm"
+                />
+              </div>
+            ))
+          )}
         </div>
       </Card>
     )
@@ -380,7 +355,16 @@ export default function ManagerDashboard() {
       {/* Notification Panel */}
       {showNotifications && (
         <NotificationPanel
-          tickets={tickets}
+          tickets={alerts.map(alert => ({
+            id: alert.id,
+            operatorName: "Operator", // TODO: Get from operator data
+            operatorRole: "Role", // TODO: Get from operator data
+            station: alert.stationId || "Unknown",
+            issue: alert.message,
+            priority: alert.priority,
+            timestamp: new Date(alert.timestamp),
+            status: alert.acknowledged ? "resolved" : "open",
+          }))}
           onClose={() => setShowNotifications(false)}
           onAssignTicket={handleAssignTicket}
           onResolveTicket={handleResolveTicket}

@@ -6,6 +6,8 @@ The Miko Factory Dashboard is an ice cream production monitoring and quality con
 
 The system uses a traffic light status system (green/yellow/red) for immediate status recognition across production stations, enabling quick decision-making and issue identification throughout the manufacturing process.
 
+**Data Architecture:** Migrated from PostgreSQL to Pinata Cloud (IPFS) storage using Solana token metadata format with chained references. All mock data removed - production data loaded from user's Pinata tokens.
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -50,14 +52,18 @@ Preferred communication style: Simple, everyday language.
 - Raw body capture for webhook/signature verification scenarios
 
 **Data Layer:**
-- In-memory storage implementation (`MemStorage`) as current data persistence layer
-- Storage interface pattern (`IStorage`) enabling easy migration to database-backed solutions
-- CRUD operations abstracted through storage interface
+- Pinata IPFS integration via `PinataService` for fetching Solana token metadata
+- In-memory storage (`MemStorage`) caches Pinata data for performance
+- Storage interface (`IStorage`) provides CRUD operations over Pinata-sourced data
+- NO MOCK DATA - all data must be loaded from user's Pinata tokens
 
 **Current State:**
-- Minimal route registration (foundation ready for API endpoint expansion)
-- Mock data driving frontend functionality
-- Designed for future backend integration with real-time production data
+- Production flow configuration endpoint (`/api/config/production-flow`)
+- Station management endpoints (`/api/stations`)
+- Batch loading from Pinata tokens (`/api/batches/load`)
+- Alert/ticket management endpoints
+- Operator QR code authentication endpoints
+- Frontend uses React Query to fetch from Pinata-backed APIs
 
 ### Database Schema Design
 

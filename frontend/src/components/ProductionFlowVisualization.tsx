@@ -2,7 +2,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Clock, Package } from "lucide-react";
-import { factoryStations, type ProductionBatch } from "@/lib/mockData";
+import { useStations } from "@/lib/api-hooks";
+import type { BatchData, StationConfig } from "@shared/pinata-schema";
 import {
   Tooltip,
   TooltipContent,
@@ -10,32 +11,48 @@ import {
 } from "@/components/ui/tooltip";
 
 interface ProductionFlowVisualizationProps {
-  batches: ProductionBatch[];
+  batches: BatchData[];
 }
 
 export default function ProductionFlowVisualization({ batches }: ProductionFlowVisualizationProps) {
-  // Group batches by current station
-  const batchesByStation = factoryStations.map(station => ({
-    station,
+  // Fetch stations from API (NO MOCK DATA)
+  const { data: stations = [], isLoading } = useStations();
+
+  if (isLoading) {
+    return (
+      <Card className="p-6">
+        <p className="text-center text-muted-foreground">Loading production flow...</p>
+      </Card>
+    );
+  }
+
+  if (stations.length === 0) {
+    return (
+      <Card className="p-6">
+        <p className="text-center text-muted-foreground">
+          No production flow configured. Load stations from Pinata to see production flow.
+        </p>
+      </Card>
+    );
+  }
+
+  // Group batches by current station (using configured stations from Pinata)
+  const batchesByStation = stations.map(station => ({
+    station: {
+      id: station.id,
+      name: station.name,
+      type: station.type,
+      order: station.order,
+      avgProcessingTime: station.avgProcessingTime || 0,
+    },
     batches: batches.filter(b => b.currentStation === station.id),
-    avgTime: 0,
+    avgTime: station.avgProcessingTime || 0,
     totalProcessed: 0
   }));
 
   // Calculate statistics for each station
   batchesByStation.forEach(stationData => {
-    const relevantBatches = batches.filter(b => 
-      b.stationHistory.some(h => h.station === stationData.station.id && h.duration)
-    );
-    
-    if (relevantBatches.length > 0) {
-      const totalTime = relevantBatches.reduce((sum, batch) => {
-        const history = batch.stationHistory.find(h => h.station === stationData.station.id);
-        return sum + (history?.duration || 0);
-      }, 0);
-      stationData.avgTime = totalTime / relevantBatches.length;
-      stationData.totalProcessed = relevantBatches.reduce((sum, b) => sum + b.productsInBatch, 0);
-    }
+    stationData.totalProcessed = stationData.batches.length;
   });
 
   const getStatusColor = (status: string) => {

@@ -13,11 +13,11 @@ import {
   X
 } from "lucide-react";
 import ProductionFlowVisualization from "./ProductionFlowVisualization";
-import type { ProductionBatch } from "@/lib/mockData";
+import type { BatchData } from "@shared/pinata-schema";
 
 interface StationFocusPanelProps {
   stationName: string;
-  batches: ProductionBatch[];
+  batches: BatchData[];
   onClose: () => void;
 }
 
