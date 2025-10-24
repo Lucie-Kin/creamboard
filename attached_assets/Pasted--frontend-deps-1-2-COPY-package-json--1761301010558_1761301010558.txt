@@ -1,0 +1,63 @@
+ => [frontend deps 1/2] COPY package*.json ./                                                                                                                        0.0s
+ => [frontend deps 2/2] RUN npm install                                                                                                                             14.7s
+ => [backend builder 1/3] COPY --from=deps /app/node_modules ./node_modules                                                                                          0.2s
+ => [backend builder 2/3] COPY . .                                                                                                                                   0.0s
+ => [backend builder 3/3] RUN npm run build                                                                                                                          0.9s
+ => [backend runner 1/3] COPY --from=builder /app/dist ./dist                                                                                                        0.0s
+ => [backend runner 2/3] COPY --from=builder /app/node_modules ./node_modules                                                                                        0.2s
+ => [backend runner 3/3] COPY --from=builder /app/package.json ./package.json                                                                                        0.0s
+ => [backend] exporting to image                                                                                                                                     0.2s
+ => => exporting layers                                                                                                                                              0.2s
+ => => writing image sha256:469d5227faaf177a70a53b901a04afbcb6e7ab80ac82b5c7270376f8baa3c4b6                                                                         0.0s
+ => => naming to docker.io/library/icecreamdash1-backend                                                                                                             0.0s
+ => [backend] resolving provenance for metadata file                                                                                                                 0.0s
+ => [frontend builder 1/3] COPY --from=deps /app/node_modules ./node_modules                                                                                         0.7s
+ => [frontend builder 2/3] COPY . .                                                                                                                                  0.0s
+ => ERROR [frontend builder 3/3] RUN npm run build                                                                                                                   2.7s
+------
+ > [frontend builder 3/3] RUN npm run build:
+0.246 
+0.246 > miko-factory-frontend@1.0.0 build
+0.246 > tsc && vite build
+0.246 
+2.704 src/components/AlertCard.tsx(29,9): error TS6133: 'priorityColors' is declared but its value is never read.
+2.704 src/components/FactoryFloorPlan.tsx(5,1): error TS6133: 'Badge' is declared but its value is never read.
+2.704 src/components/FactoryFloorPlan.tsx(127,11): error TS6133: 'arrowSize' is declared but its value is never read.
+2.704 src/components/ManagerDashboard.tsx(2,1): error TS6133: 'Draggable' is declared but its value is never read.
+2.704 src/components/ManagerDashboard.tsx(43,1): error TS6133: 'cn' is declared but its value is never read.
+2.704 src/components/ManagerDashboard.tsx(51,6): error TS6196: 'DashboardCard' is declared but never used.
+2.704 src/components/ManagerDashboard.tsx(71,10): error TS6133: 'viewMode' is declared but its value is never read.
+2.704 src/components/ManagerDashboard.tsx(71,20): error TS6133: 'setViewMode' is declared but its value is never read.
+2.704 src/components/NotificationPanel.tsx(6,1): error TS6133: 'Input' is declared but its value is never read.
+2.704 src/components/OperatorDashboard.tsx(13,3): error TS6133: 'ChevronLeft' is declared but its value is never read.
+2.704 src/components/OperatorDashboard.tsx(14,3): error TS6133: 'ChevronRight' is declared but its value is never read.
+2.704 src/components/OperatorDashboard.tsx(20,1): error TS6133: 'TrafficLightIndicator' is declared but its value is never read.
+2.704 src/components/OperatorDashboard.tsx(101,9): error TS6133: 'handleSwipe' is declared but its value is never read.
+2.704 src/components/ProductionGrid.tsx(1,1): error TS6133: 'Badge' is declared but its value is never read.
+2.704 src/components/QRScanner.tsx(17,10): error TS6133: 'isScanning' is declared but its value is never read.
+2.704 src/lib/queryClient.ts(4,29): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+2.718 npm notice
+2.718 npm notice New major version of npm available! 10.8.2 -> 11.6.2
+2.718 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+2.718 npm notice To update run: npm install -g npm@11.6.2
+2.718 npm notice
+------
+Dockerfile:20
+
+--------------------
+
+  18 |     ENV VITE_API_URL=$VITE_API_URL
+
+  19 |     
+
+  20 | >>> RUN npm run build
+
+  21 |     
+
+  22 |     # Production image - serve with nginx
+
+--------------------
+
+target frontend: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 2
+
+make: *** [Makefile:72: docker-up] Error 1
