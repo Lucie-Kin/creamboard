@@ -4,6 +4,7 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
+  base: "/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -19,5 +20,14 @@ export default defineConfig({
   build: {
     outDir: "dist",
     sourcemap: true,
+    assetsDir: "assets",
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        assetFileNames: "assets/[name]-[hash][extname]",
+        chunkFileNames: "assets/[name]-[hash].js",
+        entryFileNames: "assets/[name]-[hash].js",
+      },
+    },
   },
 });
