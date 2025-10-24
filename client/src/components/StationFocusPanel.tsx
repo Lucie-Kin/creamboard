@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import ProductionFlowVisualization from "./ProductionFlowVisualization";
 import { useProviders } from "@/lib/api-hooks";
-import type { BatchData } from "../../shared/pinata-schema";
+import type { BatchData } from "@shared/pinata-schema";
 
 interface StationFocusPanelProps {
   stationName: string;
@@ -231,11 +231,16 @@ export default function StationFocusPanel({
                   <span>Certifications</span>
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  {providerData.certifications.map((cert: string, i: number) => (
+                  {(providerData.certifications ?? []).map((cert: string, i: number) => (
                     <Badge key={i} variant="outline" className="text-xs">
                       {cert}
                     </Badge>
                   ))}
+                  {(!providerData.certifications || providerData.certifications.length === 0) && (
+                    <Badge variant="outline" className="text-xs text-muted-foreground">
+                      No certifications on file
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground italic">
                   Verified quality standards
@@ -250,11 +255,11 @@ export default function StationFocusPanel({
                   <span>Audit Score</span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <p className="text-2xl font-bold text-success">{providerData.conditions.lastAudit ? providerData.conditions.score : 'N/A'}</p>
-                  {providerData.conditions.score && <span className="text-sm text-muted-foreground">/100</span>}
+                  <p className="text-2xl font-bold text-success">{providerData.conditions?.score ?? 'N/A'}</p>
+                  {providerData.conditions?.score && <span className="text-sm text-muted-foreground">/100</span>}
                 </div>
                 <p className="text-xs text-muted-foreground italic">
-                  Last audit: {providerData.conditions.lastAudit ? new Date(providerData.conditions.lastAudit).toLocaleDateString() : 'N/A'}
+                  Last audit: {providerData.conditions?.lastAudit ? new Date(providerData.conditions.lastAudit).toLocaleDateString() : 'N/A'}
                 </p>
               </div>
             </Card>
@@ -311,7 +316,7 @@ export default function StationFocusPanel({
               <p className="text-sm font-medium">AI Performance Analysis</p>
               <p className="text-sm text-muted-foreground">
                 {isProvider && providerData && 
-                  `${providerData.name} maintains excellent quality standards with a ${providerData.conditions.score}/100 audit score. Certifications ${providerData.certifications.join(', ')} ensure compliance. Production capacity of ${providerData.productionCapacity} meets current demand efficiently.`}
+                  `${providerData.name} maintains excellent quality standards${providerData.conditions?.score ? ` with a ${providerData.conditions.score}/100 audit score` : ''}. Certifications ${providerData.certifications?.join(', ') ?? 'pending'} ensure compliance. Production capacity of ${providerData.productionCapacity ?? 'not specified'} meets current demand efficiently.`}
                 {!isProvider && stationName.toLowerCase().includes("heating") && 
                   "Temperature stability has improved 2.3% this month. Factory D implemented automated climate control with 15% energy savings - worth exploring for Q2."}
                 {!isProvider && stationName.toLowerCase().includes("cooling") && 

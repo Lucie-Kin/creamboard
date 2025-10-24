@@ -32,7 +32,7 @@ import NotificationPanel from "./NotificationPanel";
 import ProductionFlowVisualization from "./ProductionFlowVisualization";
 import ProductionTimeline from "./ProductionTimeline";
 import { useStations, useBatches, useAlerts } from "@/lib/api-hooks";
-import type { StationConfig, BatchData, AlertData } from "../../shared/pinata-schema";
+import type { StationConfig, BatchData, AlertData } from "@shared/pinata-schema";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
