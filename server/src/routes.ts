@@ -716,12 +716,12 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
         console.log("   - properties object NOT found ✗");
       }
       
-      // Extract provider data from properties.files[2] (THIRD element)
-      if (nftData.properties && Array.isArray(nftData.properties.files) && nftData.properties.files.length > 2) {
-        const providerFileUrl = nftData.properties.files[2].uri as string;
+      // Extract provider data from properties.files[1] (SECOND element)
+      if (nftData.properties && Array.isArray(nftData.properties.files) && nftData.properties.files.length > 1) {
+        const providerFileUrl = nftData.properties.files[1].uri as string;
         
         console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        console.log("📥 Step 4: Accessing properties.files[2].uri");
+        console.log("📥 Step 4: Accessing properties.files[1].uri (second element)");
         console.log(`   Extracted URI: ${providerFileUrl}`);
         console.log("   Fetching provider data...");
         
@@ -753,7 +753,7 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
         }
       } else {
         console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        console.log("⚠️  NFT does not contain provider data in properties.files[2]");
+        console.log("⚠️  NFT does not contain provider data in properties.files[1]");
         console.log(`   Files array length: ${nftData.properties?.files?.length || 0}`);
         console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
       }
