@@ -14,7 +14,9 @@ import {
   RotateCcw,
   Plus,
   Link as LinkIcon,
-  Unlink
+  Unlink,
+  Tractor,
+  Truck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,16 +35,18 @@ interface Connection {
 }
 
 const stationTypes = [
+  { type: "provider", label: "Provider (Farm/Supplier)", icon: Tractor, color: "bg-lime-600" },
   { type: "arrival_dock", label: "Arrival Dock", icon: Warehouse, color: "bg-blue-500" },
   { type: "storage_tank", label: "Storage Tank", icon: Droplets, color: "bg-cyan-500" },
-  { type: "laboratory", label: "Lab & R&D", icon: FlaskConical, color: "bg-purple-500" },
+  { type: "lab_rd", label: "Lab & R&D", icon: FlaskConical, color: "bg-purple-500" },
   { type: "mixing_room", label: "Mixing Room", icon: Droplets, color: "bg-indigo-500" },
   { type: "heating_room", label: "Heating Room", icon: Flame, color: "bg-orange-500" },
   { type: "cooling_room", label: "Cooling Room", icon: Snowflake, color: "bg-blue-400" },
   { type: "packaging", label: "Packaging", icon: Package, color: "bg-green-500" },
   { type: "waste_management", label: "Waste Management", icon: Trash2, color: "bg-gray-500" },
-  { type: "storage", label: "Storage", icon: Warehouse, color: "bg-amber-500" },
+  { type: "storage", label: "Final Storage", icon: Warehouse, color: "bg-amber-500" },
   { type: "delivery_dock", label: "Delivery Dock", icon: Warehouse, color: "bg-emerald-500" },
+  { type: "transporter", label: "Transporter (Logistics)", icon: Truck, color: "bg-rose-600" },
 ];
 
 export default function FactoryFloorPlan() {
