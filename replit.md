@@ -8,6 +8,8 @@ The system uses a traffic light status system (green/yellow/red) for immediate s
 
 **Data Architecture:** Migrated from PostgreSQL to Pinata Cloud (IPFS) storage using Solana token metadata format with chained references. All mock data removed - production data loaded from user's Pinata tokens.
 
+**Extended Supply Chain Model (2025-10-24):** System now supports complete end-to-end supply chain from providers (farms/suppliers) through production stations to transporters and distributors (resellers), enabling full traceability from source to retail.
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -63,6 +65,8 @@ Preferred communication style: Simple, everyday language.
 - Batch loading from Pinata tokens (`/api/batches/load`)
 - Alert/ticket management endpoints
 - Operator QR code authentication endpoints
+- **Extended entity support**: Providers, Transporters, Distributors
+- **Detailed station data schemas**: Each station type has specific data structure (arrival dock deliveries, tank monitoring, lab tests, mixing parameters, temperature logs, packaging stats, etc.)
 - Frontend uses React Query to fetch from Pinata-backed APIs
 
 ### Database Schema Design
@@ -75,12 +79,32 @@ Preferred communication style: Simple, everyday language.
 
 **Core Schema Entities:**
 
-1. **Factory Stations** - Physical production line locations
-   - Supports 10 station types (arrival dock, storage tank, laboratory, mixing room, heating room, cooling room, packaging, waste management, storage, delivery dock)
-   - Position tracking (X/Y coordinates) for floor plan visualization
-   - UUID primary keys with PostgreSQL's `gen_random_uuid()`
+1. **External Supply Chain Entities**
+   - **Providers** (farms/suppliers): Source of raw materials with certifications, audit scores, delivery tracking
+   - **Transporters**: Logistics companies with driver info, vehicle tracking, temperature monitoring during transit
+   - **Distributors** (resellers): Supermarkets, convenience stores, restaurants, wholesalers receiving finished products
 
-2. **Operators** - Factory floor workers
+2. **Factory Stations** - Physical production line locations
+   - Supports 10 station types: arrival_dock, storage_tank, lab_rd, mixing_room, heating_room, cooling_room, packaging, waste_management, storage, delivery_dock
+   - Each station type has detailed data schema:
+     - **Arrival Dock**: Provider deliveries, quality checks, material receiving
+     - **Storage Tanks**: Tank-by-tank monitoring (temperature, fill level, cleaning status)
+     - **Lab/R&D**: Quality test results (pH, viscosity, microbial), sample analysis
+     - **Mixing Room**: Recipe ingredients, mixing parameters, operator tracking
+     - **Heating Room**: Pasteurization temperatures, hold times, deviations
+     - **Cooling Room**: Cooling curves, start/end times, temperature monitoring
+     - **Packaging**: Units produced, defects, machine/operator IDs, labeling
+     - **Storage (Final)**: Freezer locations, storage duration, temperature logs
+     - **Delivery Dock**: Transporter assignment, loading times, destination
+   - Position tracking (X/Y coordinates) for floor plan visualization
+   - Chained references via `nextStation` field
+
+3. **Production Batches** - Ice cream production runs
+   - Batch number, product name, current station location
+   - Traffic light status (green/yellow/red)
+   - Product counts: `productsInBatch`, `productsCompleted` for progress tracking
+
+4. **Operators** - Factory floor workers
    - QR code-based authentication system
    - Role-based access tied to specific stations
    - Unique QR code constraint for security

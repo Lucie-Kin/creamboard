@@ -1,0 +1,20 @@
+{
+  "stationId": "PACKAGING_01",
+  "name": "Packaging",
+  "symbol": "PACK_ROOM",
+  "attributes": [
+    { "trait_type": "type", "value": "packaging" },
+    { "trait_type": "order", "value": 7 },
+    { "trait_type": "nextStation", "value": "storage" }
+  ],
+  "data": {
+    "batchId": "BATCH-001",
+    "unitsProduced": 450,
+    "defectiveUnits": 5,
+    "machineId": "PKG-LINE-3",
+    "operatorId": "OPR_SARA_06",
+    "labels": ["Vanilla 500ml", "Expiry: 2025-12-10"],
+    "status": "green"
+  },
+  "prev": "COOL_ROOM_CID"
+}

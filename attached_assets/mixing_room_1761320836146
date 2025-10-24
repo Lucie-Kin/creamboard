@@ -1,0 +1,24 @@
+{
+  "stationId": "MIX_ROOM_01",
+  "name": "Mixing Room",
+  "symbol": "MIX_ROOM",
+  "attributes": [
+    { "trait_type": "type", "value": "mixing_room" },
+    { "trait_type": "order", "value": 4 },
+    { "trait_type": "nextStation", "value": "heating_room" }
+  ],
+  "data": {
+    "currentBatch": "BATCH-001",
+    "mixingSpeedRPM": 1200,
+    "durationMinutes": 30,
+    "temperature": "25°C",
+    "operatorId": "OPR_MATT_04",
+    "ingredients": [
+      { "name": "Milk", "quantity": "200L" },
+      { "name": "Sugar", "quantity": "25kg" },
+      { "name": "Vanilla Flavor", "quantity": "5L" }
+    ],
+    "status": "green"
+  },
+  "prev": "LAB_RD_CID"
+}

@@ -1,0 +1,12 @@
+{
+  "providerId": "PROV_FARM_001",
+  "name": "DairyFarm MontBlanc",
+  "address": "Chemin des Prés, 74120 Megève, France",
+  "owner": "Jean-Luc Dupont",
+  "type": "milk_supplier",
+  "productionCapacity": "12000L/day",
+  "distanceKm": 42,
+  "certifications": ["BIO-FR-09", "ISO22000"],
+  "conditions": { "lastAudit": "2025-09-15", "score": 95 },
+  "status": "verified"
+}

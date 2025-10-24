@@ -1,0 +1,19 @@
+{
+  "stationId": "DELIVERY_DOCK_01",
+  "name": "Delivery Dock",
+  "symbol": "DEL_DOCK",
+  "attributes": [
+    { "trait_type": "type", "value": "delivery_dock" },
+    { "trait_type": "order", "value": 9 },
+    { "trait_type": "nextStation", "value": "transporter" }
+  ],
+  "data": {
+    "batchId": "BATCH-001",
+    "transporterId": "TRANS_003",
+    "loadingTime": "2025-10-24T07:30:00Z",
+    "destination": "Paris Distribution Center",
+    "temperatureDuringLoad": "-18.9°C",
+    "status": "green"
+  },
+  "prev": "STORAGE_FINAL_CID"
+}

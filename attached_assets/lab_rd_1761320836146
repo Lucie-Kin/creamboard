@@ -1,0 +1,21 @@
+{
+  "stationId": "LAB_RD_01",
+  "name": "Lab & R&D",
+  "symbol": "LAB_RD",
+  "description": "Quality testing and formulation adjustments.",
+  "attributes": [
+    { "trait_type": "type", "value": "lab_rd" },
+    { "trait_type": "order", "value": 3 },
+    { "trait_type": "testsPerformed", "value": ["pH", "viscosity", "microbial_count"] },
+    { "trait_type": "nextStation", "value": "mixing_room" }
+  ],
+  "data": {
+    "samples": [
+      { "batch": "BATCH-001", "pH": 6.8, "microbial": "within limit", "viscosity": "normal" },
+      { "batch": "BATCH-002", "pH": 6.5, "microbial": "alert", "viscosity": "low" }
+    ],
+    "analyst": "OPR_MAYA_03",
+    "status": "yellow"
+  },
+  "prev": "STORAGE_TANK_CID"
+}

@@ -1,0 +1,19 @@
+{
+  "stationId": "STORAGE_FINAL_01",
+  "name": "Cold Storage",
+  "symbol": "STORAGE_FINAL",
+  "attributes": [
+    { "trait_type": "type", "value": "storage" },
+    { "trait_type": "order", "value": 8 },
+    { "trait_type": "temperatureSetpoint", "value": "-20°C" },
+    { "trait_type": "nextStation", "value": "delivery_dock" }
+  ],
+  "data": {
+    "batchId": "BATCH-001",
+    "freezerLocation": "Zone A / Shelf 3",
+    "temperature": "-19.7°C",
+    "durationStoredHours": 36,
+    "status": "green"
+  },
+  "prev": "PACKAGING_CID"
+}

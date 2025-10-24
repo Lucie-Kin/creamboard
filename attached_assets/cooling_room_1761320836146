@@ -1,0 +1,19 @@
+{
+  "stationId": "COOL_ROOM_01",
+  "name": "Cooling Room",
+  "symbol": "COOL_ROOM",
+  "attributes": [
+    { "trait_type": "type", "value": "cooling_room" },
+    { "trait_type": "order", "value": 6 },
+    { "trait_type": "temperatureSetpoint", "value": "4°C" },
+    { "trait_type": "nextStation", "value": "packaging" }
+  ],
+  "data": {
+    "batchId": "BATCH-001",
+    "coolStart": "2025-10-23T11:00:00Z",
+    "coolEnd": "2025-10-23T11:45:00Z",
+    "actualTemp": "3.8°C",
+    "status": "green"
+  },
+  "prev": "HEAT_ROOM_CID"
+}

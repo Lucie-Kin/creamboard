@@ -1,0 +1,11 @@
+{
+  "transporterId": "TRANS_003",
+  "company": "FroidLogix Transport",
+  "driver": { "name": "Paul Martin", "license": "BTR-9483", "rating": 4.8 },
+  "vehicle": { "plate": "AB-125-CD", "refrigerated": true },
+  "destination": "Paris Distribution Center",
+  "routeDistanceKm": 550,
+  "hoursDriven": 7.2,
+  "temperatureLog": ["-19.0", "-18.8", "-19.1", "-18.9"],
+  "status": "en route"
+}

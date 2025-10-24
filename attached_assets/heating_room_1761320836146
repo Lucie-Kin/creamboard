@@ -1,0 +1,20 @@
+{
+  "stationId": "HEAT_ROOM_01",
+  "name": "Heating Room",
+  "symbol": "HEAT_ROOM",
+  "attributes": [
+    { "trait_type": "type", "value": "heating_room" },
+    { "trait_type": "order", "value": 5 },
+    { "trait_type": "temperatureSetpoint", "value": "85°C" },
+    { "trait_type": "duration", "value": "20min" },
+    { "trait_type": "nextStation", "value": "cooling_room" }
+  ],
+  "data": {
+    "batchId": "BATCH-001",
+    "actualTemp": "84.7°C",
+    "holdTime": "20min",
+    "deviation": "none",
+    "status": "green"
+  },
+  "prev": "MIX_ROOM_CID"
+}

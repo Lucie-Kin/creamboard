@@ -1,0 +1,37 @@
+{
+  "stationId": "ARRIVAL_DOCK_01",
+  "name": "Arrival Dock Station",
+  "symbol": "ARR_DOCK",
+  "description": "Receiving station for raw milk, sugar, flavorings, and packaging.",
+  "attributes": [
+    { "trait_type": "type", "value": "arrival_dock" },
+    { "trait_type": "order", "value": 1 },
+    { "trait_type": "incomingProviders", "value": 3 },
+    { "trait_type": "qualityChecks", "value": ["temperature", "sanitation", "weight"] },
+    { "trait_type": "nextStation", "value": "storage_tanks" }
+  ],
+  "data": {
+    "providerDeliveries": [
+      {
+        "providerId": "PROV_FARM_001",
+        "material": "Whole Milk",
+        "quantity": "2500L",
+        "temperature": "4°C",
+        "arrivalTime": "2025-10-23T08:20:00Z",
+        "condition": "OK",
+        "deliveryNoteId": "DLV-001-2025"
+      },
+      {
+        "providerId": "PROV_SUGAR_002",
+        "material": "Cane Sugar",
+        "quantity": "300kg",
+        "arrivalTime": "2025-10-23T09:00:00Z",
+        "condition": "OK"
+      }
+    ],
+    "operatorId": "OPR_JEAN_01",
+    "timestamp": "2025-10-23T09:10:00Z",
+    "status": "green"
+  },
+  "prev": "PROVIDER_CHAIN_CID"
+}
