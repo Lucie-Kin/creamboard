@@ -11,7 +11,8 @@ RUN npm install
 # Build the application
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
-COPY shared ./shared
+RUN mkdir -p ./shared
+COPY shared/pinata-schema.ts ./shared/pinata-schema.ts
 COPY frontend/src ./src
 COPY frontend/index.html ./index.html
 COPY frontend/vite.config.ts ./vite.config.ts
