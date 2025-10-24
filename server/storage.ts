@@ -9,6 +9,7 @@ import {
   AlertData,
   OperatorData,
   ProductionFlow,
+  ProviderData,
 } from "@shared/pinata-schema";
 
 export interface IStorage {
@@ -41,6 +42,11 @@ export interface IStorage {
   getOperator(id: string): Promise<OperatorData | null>;
   getOperatorByQR(qrCode: string): Promise<OperatorData | null>;
   addOperator(operator: OperatorData): Promise<void>;
+  
+  // Provider Management (External Supply Chain)
+  getProviders(): Promise<ProviderData[]>;
+  getProvider(id: string): Promise<ProviderData | null>;
+  addProvider(provider: ProviderData): Promise<void>;
 }
 
 /**
@@ -54,6 +60,7 @@ export class MemStorage implements IStorage {
   private batches: Map<string, BatchData> = new Map();
   private alerts: Map<string, AlertData> = new Map();
   private operators: Map<string, OperatorData> = new Map();
+  private providers: Map<string, ProviderData> = new Map();
 
   constructor() {
     // Initialize with test data for Docker deployment
@@ -202,6 +209,19 @@ export class MemStorage implements IStorage {
     this.operators.set(operator.id, operator);
   }
 
+  // Provider Management
+  async getProviders(): Promise<ProviderData[]> {
+    return Array.from(this.providers.values());
+  }
+
+  async getProvider(id: string): Promise<ProviderData | null> {
+    return this.providers.get(id) || null;
+  }
+
+  async addProvider(provider: ProviderData): Promise<void> {
+    this.providers.set(provider.providerId, provider);
+  }
+
   // Utility methods
   clear(): void {
     this.productionFlow = null;
@@ -209,6 +229,7 @@ export class MemStorage implements IStorage {
     this.batches.clear();
     this.alerts.clear();
     this.operators.clear();
+    this.providers.clear();
   }
 }
 

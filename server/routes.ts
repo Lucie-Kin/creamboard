@@ -352,40 +352,93 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
     }
   });
 
+  // ==================== PROVIDERS (EXTERNAL SUPPLY CHAIN) ====================
+  
+  /**
+   * Get all providers
+   * GET /api/providers
+   */
+  app.get("/api/providers", async (_req, res) => {
+    try {
+      const providers = await storage.getProviders();
+      res.json(providers);
+    } catch (error) {
+      console.error("Error getting providers:", error);
+      res.status(500).json({ error: "Failed to get providers" });
+    }
+  });
+
+  /**
+   * Get provider by ID
+   * GET /api/providers/:id
+   */
+  app.get("/api/providers/:id", async (req, res) => {
+    try {
+      const provider = await storage.getProvider(req.params.id);
+      
+      if (!provider) {
+        return res.status(404).json({ error: "Provider not found" });
+      }
+
+      res.json(provider);
+    } catch (error) {
+      console.error("Error getting provider:", error);
+      res.status(500).json({ error: "Failed to get provider" });
+    }
+  });
+
   // ==================== STARTUP INITIALIZATION ====================
   
   /**
-   * Auto-load test data from Pinata on startup
+   * Auto-load data from Pinata NFT on startup
+   * Extracts Provider data from the second file in the NFT
    */
   async function initializeData() {
-    log("Loading test data from Pinata...", "init");
+    log("Loading data from Pinata NFT...", "init");
     
     try {
-      // Hardcoded test data URL
-      const testDataUrl = "https://gateway.pinata.cloud/ipfs/bafkreib2sr2lsaqtsxsxkgpgcajxh5henxuc7v7uffo7eplnf3vvqxpwem";
+      // Fetch NFT metadata
+      const nftUrl = "https://gateway.pinata.cloud/ipfs/bafkreib2sr2lsaqtsxsxkgpgcajxh5henxuc7v7uffo7eplnf3vvqxpwem";
       
-      log(`Fetching from: ${testDataUrl}`, "init");
-      const response = await fetch(testDataUrl);
+      log(`Fetching NFT metadata...`, "init");
+      const nftResponse = await fetch(nftUrl);
       
-      if (!response.ok) {
-        log(`Failed to fetch: ${response.statusText}`, "init");
+      if (!nftResponse.ok) {
+        log(`Failed to fetch NFT: ${nftResponse.statusText}`, "init");
         return;
       }
       
-      const data = await response.json();
-      log(`Fetched data successfully: ${JSON.stringify(data).substring(0, 100)}...`, "init");
+      const nftData = await nftResponse.json();
       
-      // Try to parse as batch data (Solana token format)
-      const batch = tokenToBatchData(data);
-      if (batch) {
-        await storage.addBatch(batch);
-        log(`Loaded batch: ${batch.batchNumber}`, "init");
+      // Extract the second file (contains provider data)
+      const files = nftData?.properties?.files;
+      if (!files || files.length < 2) {
+        log("NFT doesn't contain expected files structure", "init");
+        return;
+      }
+      
+      const providerFileUrl = files[1].uri; // Second file
+      log(`Fetching provider data from: ${providerFileUrl}`, "init");
+      
+      const providerResponse = await fetch(providerFileUrl);
+      if (!providerResponse.ok) {
+        log(`Failed to fetch provider data: ${providerResponse.statusText}`, "init");
+        return;
+      }
+      
+      const providerData = await providerResponse.json();
+      log(`Provider data loaded: ${providerData.name}`, "init");
+      
+      // Store the provider data (with proper type checking)
+      if (providerData.providerId && providerData.name) {
+        await storage.addProvider(providerData);
+        log(`✅ Loaded provider: ${providerData.name}`, "init");
       } else {
-        log("Data doesn't match batch schema, skipping", "init");
+        log("Provider data missing required fields", "init");
       }
       
     } catch (error) {
-      log(`Error loading test data: ${error}`, "init");
+      log(`Error loading data: ${error}`, "init");
     }
   }
 
