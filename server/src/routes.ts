@@ -673,16 +673,18 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
   
   /**
    * Auto-load data from Pinata NFT on startup
-   * Extracts Provider data from the second file in the NFT
+   * Extracts Provider data from the THIRD file in the NFT wrapper
    */
   async function initializeData() {
     console.log("🔄 Loading data from Pinata NFT...");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     
     try {
       // Hardcoded Pinata NFT URL (Solana metadata wrapper)
       const nftUrl = "https://gateway.pinata.cloud/ipfs/bafkreib2sr2lsaqtsxsxkgpgcajxh5henxuc7v7uffo7eplnf3vvqxpwem";
       
-      console.log("📥 Fetching NFT metadata...");
+      console.log("📥 Step 1: Fetching NFT wrapper metadata...");
+      console.log(`   URL: ${nftUrl}`);
       const nftResponse = await fetch(nftUrl);
       
       if (!nftResponse.ok) {
@@ -690,13 +692,39 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
         return;
       }
       
+      console.log("✅ Step 2: NFT wrapper fetched successfully");
       const nftData = await nftResponse.json() as any;
       
-      // Extract provider data from properties.files[1]
-      if (nftData.properties && Array.isArray(nftData.properties.files) && nftData.properties.files.length > 1) {
-        const providerFileUrl = nftData.properties.files[1].uri as string;
+      console.log("📦 Step 3: Parsing NFT wrapper structure...");
+      console.log("   Wrapper contains:");
+      console.log(`   - name: ${nftData.name || 'N/A'}`);
+      console.log(`   - symbol: ${nftData.symbol || 'N/A'}`);
+      console.log(`   - description: ${nftData.description || 'N/A'}`);
+      
+      // Print the full wrapper structure for debugging
+      if (nftData.properties) {
+        console.log("   - properties object found ✓");
+        if (Array.isArray(nftData.properties.files)) {
+          console.log(`   - properties.files array found with ${nftData.properties.files.length} files ✓`);
+          nftData.properties.files.forEach((file: any, index: number) => {
+            console.log(`     [${index}] ${file.uri || file.url || 'Unknown URI'} (${file.type || 'unknown type'})`);
+          });
+        } else {
+          console.log("   - properties.files is NOT an array ✗");
+        }
+      } else {
+        console.log("   - properties object NOT found ✗");
+      }
+      
+      // Extract provider data from properties.files[2] (THIRD element)
+      if (nftData.properties && Array.isArray(nftData.properties.files) && nftData.properties.files.length > 2) {
+        const providerFileUrl = nftData.properties.files[2].uri as string;
         
-        console.log(`📥 Fetching provider data from: ${providerFileUrl}`);
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        console.log("📥 Step 4: Accessing properties.files[2].uri");
+        console.log(`   Extracted URI: ${providerFileUrl}`);
+        console.log("   Fetching provider data...");
+        
         const providerResponse = await fetch(providerFileUrl);
         
         if (!providerResponse.ok) {
@@ -704,23 +732,35 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
           return;
         }
         
+        console.log("✅ Step 5: Provider data fetched successfully");
         const providerJsonData = await providerResponse.json() as any;
-        console.log(`📋 Provider data loaded: ${providerJsonData.name || 'Unknown'}`);
+        
+        console.log("📋 Step 6: Provider data content:");
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        console.log(JSON.stringify(providerJsonData, null, 2));
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        
+        console.log(`📋 Provider name: ${providerJsonData.name || 'Unknown'}`);
         
         // Parse as provider data
         const provider = tokenToProviderData(providerJsonData);
         if (provider) {
           await storage.addProvider(provider);
-          console.log(`✅ Loaded provider: ${provider.name}`);
+          console.log(`✅ Step 7: Provider loaded successfully: ${provider.name}`);
+          console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         } else {
           console.log("⚠️  Data does not match provider schema");
         }
       } else {
-        console.log("⚠️  NFT does not contain provider data in properties.files[1]");
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        console.log("⚠️  NFT does not contain provider data in properties.files[2]");
+        console.log(`   Files array length: ${nftData.properties?.files?.length || 0}`);
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
       }
       
     } catch (error) {
       console.error("❌ Error loading data from Pinata:", error);
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
   }
 
