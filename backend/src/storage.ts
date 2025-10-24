@@ -19,6 +19,10 @@ export interface IStorage {
   getProductionFlow(): Promise<ProductionFlow | null>;
   setProductionFlow(flow: ProductionFlow): Promise<void>;
   
+  // Floor Plan Configuration
+  getFloorPlan(): Promise<any | null>;
+  saveFloorPlan(floorPlan: any): Promise<void>;
+  
   // Station Management
   getStations(): Promise<StationConfig[]>;
   getStation(id: string): Promise<StationConfig | null>;
@@ -68,6 +72,7 @@ export interface IStorage {
  */
 export class MemStorage implements IStorage {
   private productionFlow: ProductionFlow | null = null;
+  private floorPlan: any = null;
   private stations: Map<string, StationConfig> = new Map();
   private batches: Map<string, BatchData> = new Map();
   private alerts: Map<string, AlertData> = new Map();
@@ -196,6 +201,46 @@ export class MemStorage implements IStorage {
     this.stations.clear();
     for (const station of flow.stations) {
       this.stations.set(station.id, station);
+    }
+  }
+
+  // Floor Plan Configuration
+  async getFloorPlan(): Promise<any | null> {
+    // Try to load from file first
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const filePath = path.join(process.cwd(), 'data', 'floor-plan.json');
+      const data = await fs.readFile(filePath, 'utf-8');
+      return JSON.parse(data);
+    } catch (error) {
+      // If file doesn't exist, return in-memory version
+      return this.floorPlan;
+    }
+  }
+
+  async saveFloorPlan(floorPlan: any): Promise<void> {
+    this.floorPlan = floorPlan;
+    
+    // Save to file
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const dataDir = path.join(process.cwd(), 'data');
+      const filePath = path.join(dataDir, 'floor-plan.json');
+      
+      // Create data directory if it doesn't exist
+      try {
+        await fs.mkdir(dataDir, { recursive: true });
+      } catch (err) {
+        // Directory might already exist, that's ok
+      }
+      
+      await fs.writeFile(filePath, JSON.stringify(floorPlan, null, 2), 'utf-8');
+      console.log('✅ Floor plan saved to', filePath);
+    } catch (error) {
+      console.error('❌ Failed to save floor plan to file:', error);
+      throw error;
     }
   }
 

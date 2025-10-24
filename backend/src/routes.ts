@@ -94,6 +94,38 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
     }
   });
 
+  // ==================== FLOOR PLAN ====================
+  
+  /**
+   * Save floor plan configuration
+   * POST /api/floor-plan
+   * Body: { stations: [...], connections: [...] }
+   */
+  app.post("/api/floor-plan", async (req, res) => {
+    try {
+      const floorPlan = req.body;
+      await storage.saveFloorPlan(floorPlan);
+      res.json({ success: true, message: "Floor plan saved successfully" });
+    } catch (error) {
+      console.error("Error saving floor plan:", error);
+      res.status(500).json({ error: "Failed to save floor plan" });
+    }
+  });
+
+  /**
+   * Get saved floor plan configuration
+   * GET /api/floor-plan
+   */
+  app.get("/api/floor-plan", async (_req, res) => {
+    try {
+      const floorPlan = await storage.getFloorPlan();
+      res.json(floorPlan);
+    } catch (error) {
+      console.error("Error getting floor plan:", error);
+      res.status(500).json({ error: "Failed to get floor plan" });
+    }
+  });
+
   // ==================== STATIONS ====================
   
   /**
