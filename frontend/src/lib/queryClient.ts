@@ -1,7 +1,9 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-// Get API URL from environment variable, default to localhost:3001 for development
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+// Get API URL from environment variable
+// For Replit: Use relative URLs (empty string)
+// For Docker: Set VITE_API_URL in docker-compose.yml
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
