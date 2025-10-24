@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: miko-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - CORS_ORIGIN=http://localhost:80
+      # Add your Solana environment variables here
+      # - SOLANA_RPC_URL=${SOLANA_RPC_URL}
+      # - SOLANA_PROGRAM_ID=${SOLANA_PROGRAM_ID}
+    volumes:
+      # Mount your Solana files here
+      # - ./solana:/app/solana:ro
+      - ./backend/src:/app/src:ro  # For development hot-reload
+    restart: unless-stopped
+    networks:
+      - miko-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:3001
+    container_name: miko-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - miko-network
+
+networks:
+  miko-network:
+    driver: bridge

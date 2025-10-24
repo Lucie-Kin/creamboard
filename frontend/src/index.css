@@ -1,0 +1,314 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* LIGHT MODE - Unilever Brand Colors */
+:root {
+  --button-outline: rgba(0,0,0, .10);
+  --badge-outline: rgba(0,0,0, .05);
+
+  /* Automatic computation of border around primary / danger buttons */
+  --opaque-button-border-intensity: -8; /* In terms of percentages */
+
+  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --elevate-1: rgba(0,0,0, .03);
+  --elevate-2: rgba(0,0,0, .08);
+
+  /* Unilever Brand: Clean white background */
+  --background: 0 0% 100%;
+
+  /* Unilever Brand: Deep blue-gray for text */
+  --foreground: 212 35% 25%;
+
+  /* Light gray borders */
+  --border: 210 15% 90%;
+
+  /* Very light card backgrounds */
+  --card: 210 20% 98%;
+
+  --card-foreground: 212 35% 25%;
+
+  --card-border: 210 15% 92%;
+
+  /* Sidebar with subtle blue-gray */
+  --sidebar: 212 20% 96%;
+
+  --sidebar-foreground: 212 35% 25%;
+
+  --sidebar-border: 210 15% 90%;
+
+  /* Unilever Primary: Deep navy blue */
+  --sidebar-primary: 212 69% 19%;
+
+  --sidebar-primary-foreground: 0 0% 100%;
+
+  --sidebar-accent: 212 25% 88%;
+
+  --sidebar-accent-foreground: 212 35% 25%;
+
+  --sidebar-ring: 212 69% 45%;
+
+  --popover: 210 20% 95%;
+
+  --popover-foreground: 212 35% 25%;
+
+  --popover-border: 210 15% 88%;
+
+  /* Unilever Primary Blue: Deep navy */
+  --primary: 212 69% 19%;
+
+  --primary-foreground: 0 0% 100%;
+
+  /* Light blue-gray secondary */
+  --secondary: 212 20% 90%;
+
+  --secondary-foreground: 212 35% 25%;
+
+  /* Muted backgrounds */
+  --muted: 210 20% 94%;
+
+  --muted-foreground: 212 20% 50%;
+
+  /* Unilever Accent: Bright blue */
+  --accent: 212 69% 45%;
+
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84% 60%;
+
+  --destructive-foreground: 0 0% 100%;
+
+  --input: 210 15% 85%;
+  --ring: 212 69% 45%;
+  --chart-1: 142 71% 45%;
+  --chart-2: 45 93% 47%;
+  --chart-3: 0 84% 60%;
+  --chart-4: 212 69% 45%;
+  --chart-5: 212 69% 19%;
+
+  /* Unilever Typography: Clean, professional sans-serif */
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  --radius: .375rem; /* 6px - slightly rounded, professional */
+  --shadow-2xs: 0px 1px 2px 0px hsl(212 35% 25% / 0.04);
+  --shadow-xs: 0px 1px 3px 0px hsl(212 35% 25% / 0.06);
+  --shadow-sm: 0px 2px 4px -1px hsl(212 35% 25% / 0.04), 0px 1px 2px -1px hsl(212 35% 25% / 0.06);
+  --shadow: 0px 4px 6px -1px hsl(212 35% 25% / 0.06), 0px 2px 4px -1px hsl(212 35% 25% / 0.04);
+  --shadow-md: 0px 6px 12px -2px hsl(212 35% 25% / 0.08), 0px 3px 6px -2px hsl(212 35% 25% / 0.06);
+  --shadow-lg: 0px 10px 20px -4px hsl(212 35% 25% / 0.10), 0px 4px 8px -2px hsl(212 35% 25% / 0.06);
+  --shadow-xl: 0px 16px 32px -6px hsl(212 35% 25% / 0.12), 0px 6px 12px -3px hsl(212 35% 25% / 0.08);
+  --shadow-2xl: 0px 24px 48px -8px hsl(212 35% 25% / 0.15);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  /* Traffic light system colors for factory status */
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 100%;
+  --warning: 45 93% 47%;
+  --warning-foreground: 212 35% 25%;
+
+  /* Automatically computed borders - intensity can be controlled by the user by the --opaque-button-border-intensity setting */
+
+  /* Fallback for older browsers */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+}
+
+.dark {
+  --button-outline: rgba(255,255,255, .10);
+  --badge-outline: rgba(255,255,255, .05);
+
+  --opaque-button-border-intensity: 9;  /* In terms of percentages */
+
+  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --elevate-1: rgba(255,255,255, .04);
+  --elevate-2: rgba(255,255,255, .09);
+
+  /* Dark mode background */
+  --background: 212 35% 10%;
+
+  --foreground: 210 20% 96%;
+
+  --border: 212 20% 20%;
+
+  --card: 212 30% 14%;
+
+  --card-foreground: 210 20% 96%;
+
+  --card-border: 212 20% 22%;
+
+  --sidebar: 212 30% 18%;
+
+  --sidebar-foreground: 210 20% 96%;
+
+  --sidebar-border: 212 20% 24%;
+
+  --sidebar-primary: 212 69% 35%;
+
+  --sidebar-primary-foreground: 0 0% 100%;
+
+  --sidebar-accent: 212 25% 28%;
+
+  --sidebar-accent-foreground: 210 20% 96%;
+
+  --sidebar-ring: 212 69% 55%;
+
+  --popover: 212 30% 20%;
+
+  --popover-foreground: 210 20% 96%;
+
+  --popover-border: 212 20% 26%;
+
+  --primary: 212 69% 35%;
+
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 212 20% 25%;
+
+  --secondary-foreground: 210 20% 96%;
+
+  --muted: 212 20% 22%;
+
+  --muted-foreground: 210 15% 60%;
+
+  --accent: 212 69% 55%;
+
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84% 60%;
+
+  --destructive-foreground: 0 0% 100%;
+
+  --input: 212 20% 30%;
+  --ring: 212 69% 55%;
+  --chart-1: 142 71% 45%;
+  --chart-2: 45 93% 47%;
+  --chart-3: 0 84% 60%;
+  --chart-4: 212 69% 55%;
+  --chart-5: 212 69% 35%;
+
+  /* Traffic light colors remain the same in dark mode */
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 100%;
+  --warning: 45 93% 47%;
+  --warning-foreground: 212 35% 25%;
+
+  /* Fallback for older browsers */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+}
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: var(--font-sans);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  /* Unilever Typography Styles */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold;
+    letter-spacing: -0.015em; /* Tighter tracking for headings */
+  }
+
+  h1 {
+    @apply text-3xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+}
+
+/* Hover and active elevation utilities */
+.hover-elevate {
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-elevate:hover {
+  background-color: var(--elevate-1);
+}
+
+.active-elevate-2 {
+  transition: background-color 100ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.active-elevate-2:active {
+  background-color: var(--elevate-2);
+}
+
+/* Override default elevation on elements that already have it */
+.no-default-hover-elevate:hover {
+  background-color: transparent !important;
+}
+
+.no-default-active-elevate:active {
+  background-color: transparent !important;
+}
+
+/* Toggle elevation system */
+.toggle-elevate {
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-elevate.toggle-elevated {
+  background-color: var(--elevate-2);
+}
