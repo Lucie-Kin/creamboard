@@ -11,7 +11,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - CORS_ORIGIN=http://localhost:80
+      - CORS_ORIGIN=http://localhost:8080
       # Add your Solana environment variables here
       # - SOLANA_RPC_URL=${SOLANA_RPC_URL}
       # - SOLANA_PROGRAM_ID=${SOLANA_PROGRAM_ID}
@@ -31,7 +31,7 @@ services:
         - VITE_API_URL=http://localhost:3001
     container_name: miko-frontend
     ports:
-      - "80:80"
+      - "8080:8080"
     depends_on:
       - backend
     restart: unless-stopped

@@ -71,7 +71,7 @@ docker-up:
 	@echo "Starting Docker containers..."
 	docker-compose up -d
 	@echo "✓ Containers started"
-	@echo "  Frontend: http://localhost:80"
+	@echo "  Frontend: http://localhost:8080"
 	@echo "  Backend:  http://localhost:3001"
 
 docker-down:

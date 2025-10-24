@@ -5,14 +5,13 @@ WORKDIR /app
 
 # Install dependencies only when needed
 FROM base AS deps
-COPY frontend/package*.json ./
+COPY package*.json ./
 RUN npm install
 
 # Build the application
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
-COPY frontend ./
-COPY shared ../shared
+COPY . .
 
 # Build arguments for environment variables
 ARG VITE_API_URL=http://localhost:3001
@@ -29,6 +28,6 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Custom nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]

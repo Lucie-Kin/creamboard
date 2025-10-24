@@ -100,7 +100,7 @@ make docker-up     # Start containers
 ```
 
 Access:
-- **Frontend**: http://localhost:80
+- **Frontend**: http://localhost:8080
 - **Backend**: http://localhost:3001
 
 ### Stop Containers
@@ -207,7 +207,7 @@ Your React components work exactly the same. The only change is:
 Make sure `CORS_ORIGIN` in `backend/.env` matches your frontend URL:
 ```env
 CORS_ORIGIN=http://localhost:5173  # Development
-CORS_ORIGIN=http://localhost:80    # Docker
+CORS_ORIGIN=http://localhost:8080    # Docker
 ```
 
 ### Backend Not Starting

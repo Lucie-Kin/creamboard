@@ -53,7 +53,7 @@ make docker-down
 ```
 
 Access:
-- **Frontend**: http://localhost:80
+- **Frontend**: http://localhost:8080
 - **Backend API**: http://localhost:3001
 - **Health Check**: http://localhost:3001/health
 
@@ -186,7 +186,7 @@ Add your Solana endpoints as needed!
 make docker-down
 
 # Check what's using the port
-lsof -i :3001  # or :80
+lsof -i :3001  # or :8080
 ```
 
 ### CORS Issues
