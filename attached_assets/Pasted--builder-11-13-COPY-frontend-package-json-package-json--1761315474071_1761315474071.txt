@@ -1,0 +1,62 @@
+ => [builder 11/13] COPY frontend/package.json ./package.json                                                                                                                  0.0s
+ => [builder 12/13] COPY frontend/nginx.conf ./nginx.conf                                                                                                                      0.0s
+ => ERROR [builder 13/13] RUN npm run build                                                                                                                                    4.3s
+------                                                                                                                                                                              
+ > [builder 13/13] RUN npm run build:                                                                                                                                               
+0.334                                                                                                                                                                               
+0.334 > miko-factory-frontend@1.0.0 build                                                                                                                                           
+0.334 > tsc && vite build
+0.334 
+4.273 src/lib/api-hooks.ts(16,3): error TS2322: Type 'UseQueryResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ stations: { enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; }[]; startStation: string; flowOrder: string[]; } | n...'.
+4.273   Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ stations: { enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; }[]; startStation: string; flowOrder: string[]; } | n...'.
+4.273     Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'QueryObserverRefetchErrorResult<{ stations: { enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; }[]; startStation: string; flowOrder...'.
+4.273       Type 'unknown' is not assignable to type '{ stations: { enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; }[]; startStation: string; flowOrder: string[]; } | null'.
+4.273 src/lib/api-hooks.ts(44,3): error TS2322: Type 'UseQueryResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; }[]>'.
+4.273   Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; }[]>'.
+4.273     Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'QueryObserverRefetchErrorResult<{ enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; }[], Error>'.
+4.273       Type 'unknown' is not assignable to type '{ enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; }[]'.
+4.273 src/lib/api-hooks.ts(53,3): error TS2322: Type 'UseQueryResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; } | null>'.
+4.273   Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; } | null>'.
+4.273     Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'QueryObserverRefetchErrorResult<{ enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; } | null, Error>'.
+4.273       Type 'unknown' is not assignable to type '{ enabled: boolean; type: "storage" | "arrival_dock" | "storage_tank" | "laboratory" | "mixing_room" | "heating_room" | "cooling_room" | "packaging" | "waste_management" | "delivery_dock"; ... 6 more ...; positionY?: number | undefined; } | null'.
+4.273 src/lib/api-hooks.ts(65,3): error TS2322: Type 'UseQueryResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ id: string; status: "green" | "red" | "yellow"; timestamp: string; batchNumber: string; productName: string; productsInBatch: number; productsCompleted: number; metadata?: { symbol: string; ... 7 more ...; prev?: string | undefined; } | undefined; currentStation?: string | undefined; }[]>'.
+4.273   Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ id: string; status: "green" | "red" | "yellow"; timestamp: string; batchNumber: string; productName: string; productsInBatch: number; productsCompleted: number; metadata?: { symbol: string; ... 7 more ...; prev?: string | undefined; } | undefined; currentStation?: string | undefined; }[]>'.
+4.273     Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'QueryObserverRefetchErrorResult<{ id: string; status: "green" | "red" | "yellow"; timestamp: string; batchNumber: string; productName: string; productsInBatch: number; productsCompleted: number; metadata?: { symbol: string; ... 7 more ...; prev?: string | undefined; } | undefined; currentStation?: string | undefined...'.
+4.273       Type 'unknown' is not assignable to type '{ id: string; status: "green" | "red" | "yellow"; timestamp: string; batchNumber: string; productName: string; productsInBatch: number; productsCompleted: number; metadata?: { symbol: string; ... 7 more ...; prev?: string | undefined; } | undefined; currentStation?: string | undefined; }[]'.
+4.273 src/lib/api-hooks.ts(74,3): error TS2322: Type 'UseQueryResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ id: string; status: "green" | "red" | "yellow"; timestamp: string; batchNumber: string; productName: string; productsInBatch: number; productsCompleted: number; metadata?: { symbol: string; ... 7 more ...; prev?: string | undefined; } | undefined; currentStation?: string | undefined; } | null>'.
+4.273   Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ id: string; status: "green" | "red" | "yellow"; timestamp: string; batchNumber: string; productName: string; productsInBatch: number; productsCompleted: number; metadata?: { symbol: string; ... 7 more ...; prev?: string | undefined; } | undefined; currentStation?: string | undefined; } | null>'.
+4.273     Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'QueryObserverRefetchErrorResult<{ id: string; status: "green" | "red" | "yellow"; timestamp: string; batchNumber: string; productName: string; productsInBatch: number; productsCompleted: number; metadata?: { symbol: string; ... 7 more ...; prev?: string | undefined; } | undefined; currentStation?: string | undefined...'.
+4.273       Type 'unknown' is not assignable to type '{ id: string; status: "green" | "red" | "yellow"; timestamp: string; batchNumber: string; productName: string; productsInBatch: number; productsCompleted: number; metadata?: { symbol: string; ... 7 more ...; prev?: string | undefined; } | undefined; currentStation?: string | undefined; } | null'.
+4.273 src/lib/api-hooks.ts(117,3): error TS2322: Type 'UseQueryResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ type: string; id: string; message: string; priority: "high" | "low" | "medium"; timestamp: string; acknowledged: boolean; stationId?: string | undefined; }[]>'.
+4.273   Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ type: string; id: string; message: string; priority: "high" | "low" | "medium"; timestamp: string; acknowledged: boolean; stationId?: string | undefined; }[]>'.
+4.273     Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'QueryObserverRefetchErrorResult<{ type: string; id: string; message: string; priority: "high" | "low" | "medium"; timestamp: string; acknowledged: boolean; stationId?: string | undefined; }[], Error>'.
+4.273       Type 'unknown' is not assignable to type '{ type: string; id: string; message: string; priority: "high" | "low" | "medium"; timestamp: string; acknowledged: boolean; stationId?: string | undefined; }[]'.
+4.273 src/lib/api-hooks.ts(126,3): error TS2322: Type 'UseQueryResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ type: string; id: string; message: string; priority: "high" | "low" | "medium"; timestamp: string; acknowledged: boolean; stationId?: string | undefined; }[]>'.
+4.273   Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'UseQueryResult<{ type: string; id: string; message: string; priority: "high" | "low" | "medium"; timestamp: string; acknowledged: boolean; stationId?: string | undefined; }[]>'.
+4.273     Type 'QueryObserverRefetchErrorResult<unknown, Error>' is not assignable to type 'QueryObserverRefetchErrorResult<{ type: string; id: string; message: string; priority: "high" | "low" | "medium"; timestamp: string; acknowledged: boolean; stationId?: string | undefined; }[], Error>'.
+4.273       Type 'unknown' is not assignable to type '{ type: string; id: string; message: string; priority: "high" | "low" | "medium"; timestamp: string; acknowledged: boolean; stationId?: string | undefined; }[]'.
+4.307 npm notice
+4.307 npm notice New major version of npm available! 10.8.2 -> 11.6.2
+4.307 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+4.307 npm notice To update run: npm install -g npm@11.6.2
+4.307 npm notice
+------
+Dockerfile:30
+
+--------------------
+
+  28 |     ENV VITE_API_URL=$VITE_API_URL
+
+  29 |     
+
+  30 | >>> RUN npm run build
+
+  31 |     
+
+  32 |     # Production image - serve with nginx
+
+--------------------
+
+failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 2
+
+make: *** [Makefile:72: docker-up] Error 1

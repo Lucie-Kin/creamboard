@@ -13,7 +13,7 @@ import type { StationConfig, BatchData, AlertData, OperatorData, ProductionFlow 
  * Get the current production flow configuration
  */
 export function useProductionFlow(): UseQueryResult<ProductionFlow | null> {
-  return useQuery({
+  return useQuery<ProductionFlow | null>({
     queryKey: ["/api/config/production-flow"],
   });
 }
@@ -41,7 +41,7 @@ export function useLoadProductionFlow() {
  * Get all enabled stations in production flow order
  */
 export function useStations(): UseQueryResult<StationConfig[]> {
-  return useQuery({
+  return useQuery<StationConfig[]>({
     queryKey: ["/api/stations"],
   });
 }
@@ -50,7 +50,7 @@ export function useStations(): UseQueryResult<StationConfig[]> {
  * Get single station by ID
  */
 export function useStation(id: string): UseQueryResult<StationConfig | null> {
-  return useQuery({
+  return useQuery<StationConfig | null>({
     queryKey: ["/api/stations", id],
     enabled: !!id,
   });
@@ -62,7 +62,7 @@ export function useStation(id: string): UseQueryResult<StationConfig | null> {
  * Get all batches
  */
 export function useBatches(): UseQueryResult<BatchData[]> {
-  return useQuery({
+  return useQuery<BatchData[]>({
     queryKey: ["/api/batches"],
   });
 }
@@ -71,7 +71,7 @@ export function useBatches(): UseQueryResult<BatchData[]> {
  * Get single batch by ID
  */
 export function useBatch(id: string): UseQueryResult<BatchData | null> {
-  return useQuery({
+  return useQuery<BatchData | null>({
     queryKey: ["/api/batches", id],
     enabled: !!id,
   });
@@ -114,7 +114,7 @@ export function useUpdateBatch() {
  * Get all alerts
  */
 export function useAlerts(): UseQueryResult<AlertData[]> {
-  return useQuery({
+  return useQuery<AlertData[]>({
     queryKey: ["/api/alerts"],
   });
 }
@@ -123,7 +123,7 @@ export function useAlerts(): UseQueryResult<AlertData[]> {
  * Get unacknowledged alerts only
  */
 export function useUnacknowledgedAlerts(): UseQueryResult<AlertData[]> {
-  return useQuery({
+  return useQuery<AlertData[]>({
     queryKey: ["/api/alerts/unacknowledged"],
   });
 }
