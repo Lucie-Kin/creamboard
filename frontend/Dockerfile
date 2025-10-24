@@ -5,13 +5,14 @@ WORKDIR /app
 
 # Install dependencies only when needed
 FROM base AS deps
-COPY package*.json ./
+COPY frontend/package*.json ./
 RUN npm install
 
 # Build the application
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY frontend ./
+COPY shared ../shared
 
 # Build arguments for environment variables
 ARG VITE_API_URL=http://localhost:3001
@@ -26,7 +27,7 @@ FROM nginx:alpine AS runner
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080
 
