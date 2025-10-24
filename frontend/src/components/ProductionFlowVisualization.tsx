@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Clock, Package } from "lucide-react";
-import { useStations } from "@/lib/api-hooks";
+import { useFloorPlan } from "@/lib/api-hooks";
 import type { BatchData, StationConfig } from "@shared/pinata-schema";
 import {
   Tooltip,
@@ -15,8 +15,8 @@ interface ProductionFlowVisualizationProps {
 }
 
 export default function ProductionFlowVisualization({ batches }: ProductionFlowVisualizationProps) {
-  // Fetch stations from API (NO MOCK DATA)
-  const { data: stations = [], isLoading } = useStations();
+  // Load floor plan from saved configuration
+  const { data: floorPlan, isLoading } = useFloorPlan();
 
   if (isLoading) {
     return (
@@ -26,15 +26,28 @@ export default function ProductionFlowVisualization({ batches }: ProductionFlowV
     );
   }
 
-  if (stations.length === 0) {
+  // If no floor plan is saved, show empty state
+  if (!floorPlan || !floorPlan.stations || floorPlan.stations.length === 0) {
     return (
       <Card className="p-6">
         <p className="text-center text-muted-foreground">
-          No production flow configured. Load stations from Pinata to see production flow.
+          No floor plan configured. Please create a floor plan first.
         </p>
       </Card>
     );
   }
+
+  // Convert floor plan stations to station configs
+  const stations: StationConfig[] = floorPlan.stations.map((station: any, index: number) => ({
+    id: station.id,
+    name: station.name,
+    type: station.type,
+    order: index + 1,
+    enabled: true,
+    positionX: station.x,
+    positionY: station.y,
+    avgProcessingTime: 0,
+  }));
 
   // Group batches by current station (using configured stations from Pinata)
   const batchesByStation = stations.map(station => ({

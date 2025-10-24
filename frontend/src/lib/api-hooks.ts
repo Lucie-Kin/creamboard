@@ -44,6 +44,17 @@ export function useLoadProductionFlow() {
   });
 }
 
+// ==================== FLOOR PLAN ====================
+
+/**
+ * Get saved floor plan configuration
+ */
+export function useFloorPlan(): UseQueryResult<any | null> {
+  return useQuery<any | null>({
+    queryKey: ["/api/floor-plan"],
+  });
+}
+
 // ==================== STATIONS ====================
 
 /**
