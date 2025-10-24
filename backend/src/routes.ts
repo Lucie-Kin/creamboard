@@ -636,107 +636,38 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
   // ==================== STARTUP INITIALIZATION ====================
   
   /**
-   * Auto-load data from Pinata on startup if environment variables are set
-   * This ensures Docker deployments have data loaded automatically
+   * Auto-load test data from Pinata on startup
    */
   async function initializeData() {
-    console.log("🔄 Initializing data from Pinata...");
+    console.log("🔄 Loading test data from Pinata...");
     
-    // Load batches from PINATA_BATCH_CIDS (comma-separated list)
-    const batchCids = process.env.PINATA_BATCH_CIDS?.split(',').map(c => c.trim()).filter(Boolean);
-    if (batchCids && batchCids.length > 0) {
-      console.log(`📦 Loading ${batchCids.length} batch(es) from Pinata...`);
-      for (const cid of batchCids) {
-        try {
-          const token = await pinataService.fetchToken(cid);
-          if (token) {
-            const batch = tokenToBatchData(token);
-            if (batch) {
-              await storage.addBatch(batch);
-              console.log(`✅ Loaded batch: ${batch.batchNumber}`);
-            }
-          }
-        } catch (error) {
-          console.error(`❌ Failed to load batch from ${cid}:`, error);
-        }
+    try {
+      // Hardcoded test data URL
+      const testDataUrl = "https://gateway.pinata.cloud/ipfs/bafkreib2sr2lsaqtsxsxkgpgcajxh5henxuc7v7uffo7eplnf3vvqxpwem";
+      
+      console.log(`📥 Fetching data from: ${testDataUrl}`);
+      const response = await fetch(testDataUrl);
+      
+      if (!response.ok) {
+        console.error(`❌ Failed to fetch test data: ${response.statusText}`);
+        return;
       }
-    }
-
-    // Load providers from PINATA_PROVIDER_CIDS (comma-separated list)
-    const providerCids = process.env.PINATA_PROVIDER_CIDS?.split(',').map(c => c.trim()).filter(Boolean);
-    if (providerCids && providerCids.length > 0) {
-      console.log(`🌾 Loading ${providerCids.length} provider(s) from Pinata...`);
-      for (const cid of providerCids) {
-        try {
-          const tokenData = await pinataService.fetchTokenMetadata(cid);
-          if (tokenData) {
-            const provider = tokenToProviderData(tokenData);
-            if (provider) {
-              await storage.addProvider(provider);
-              console.log(`✅ Loaded provider: ${provider.name}`);
-            }
-          }
-        } catch (error) {
-          console.error(`❌ Failed to load provider from ${cid}:`, error);
-        }
+      
+      const data = await response.json();
+      console.log("✅ Test data fetched successfully");
+      console.log("📋 Data content:", JSON.stringify(data, null, 2));
+      
+      // Try to parse as provider data
+      const provider = tokenToProviderData(data);
+      if (provider) {
+        await storage.addProvider(provider);
+        console.log(`✅ Loaded provider: ${provider.name}`);
+      } else {
+        console.log("⚠️  Data does not match provider schema");
       }
-    }
-
-    // Load transporters from PINATA_TRANSPORTER_CIDS (comma-separated list)
-    const transporterCids = process.env.PINATA_TRANSPORTER_CIDS?.split(',').map(c => c.trim()).filter(Boolean);
-    if (transporterCids && transporterCids.length > 0) {
-      console.log(`🚚 Loading ${transporterCids.length} transporter(s) from Pinata...`);
-      for (const cid of transporterCids) {
-        try {
-          const tokenData = await pinataService.fetchTokenMetadata(cid);
-          if (tokenData) {
-            const transporter = tokenToTransporterData(tokenData);
-            if (transporter) {
-              await storage.addTransporter(transporter);
-              console.log(`✅ Loaded transporter: ${transporter.name}`);
-            }
-          }
-        } catch (error) {
-          console.error(`❌ Failed to load transporter from ${cid}:`, error);
-        }
-      }
-    }
-
-    // Load distributors from PINATA_DISTRIBUTOR_CIDS (comma-separated list)
-    const distributorCids = process.env.PINATA_DISTRIBUTOR_CIDS?.split(',').map(c => c.trim()).filter(Boolean);
-    if (distributorCids && distributorCids.length > 0) {
-      console.log(`🏪 Loading ${distributorCids.length} distributor(s) from Pinata...`);
-      for (const cid of distributorCids) {
-        try {
-          const tokenData = await pinataService.fetchTokenMetadata(cid);
-          if (tokenData) {
-            const distributor = tokenToDistributorData(tokenData);
-            if (distributor) {
-              await storage.addDistributor(distributor);
-              console.log(`✅ Loaded distributor: ${distributor.name}`);
-            }
-          }
-        } catch (error) {
-          console.error(`❌ Failed to load distributor from ${cid}:`, error);
-        }
-      }
-    }
-
-    const totalLoaded = 
-      (batchCids?.length || 0) + 
-      (providerCids?.length || 0) + 
-      (transporterCids?.length || 0) + 
-      (distributorCids?.length || 0);
-
-    if (totalLoaded === 0) {
-      console.log("ℹ️  No Pinata CIDs configured for auto-loading");
-      console.log("ℹ️  Set environment variables to auto-load data:");
-      console.log("   - PINATA_BATCH_CIDS=\"cid1,cid2,cid3\"");
-      console.log("   - PINATA_PROVIDER_CIDS=\"cid1,cid2\"");
-      console.log("   - PINATA_TRANSPORTER_CIDS=\"cid1,cid2\"");
-      console.log("   - PINATA_DISTRIBUTOR_CIDS=\"cid1,cid2\"");
-    } else {
-      console.log(`✅ Data initialization complete!`);
+      
+    } catch (error) {
+      console.error("❌ Error loading test data:", error);
     }
   }
 

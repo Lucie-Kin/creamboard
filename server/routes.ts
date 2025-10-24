@@ -350,4 +350,39 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
       res.status(500).json({ error: "Failed to add operator" });
     }
   });
+
+  // ==================== STARTUP INITIALIZATION ====================
+  
+  /**
+   * Auto-load test data from Pinata on startup
+   */
+  async function initializeData() {
+    console.log("🔄 Loading test data from Pinata...");
+    
+    try {
+      // Hardcoded test data URL
+      const testDataUrl = "https://gateway.pinata.cloud/ipfs/bafkreib2sr2lsaqtsxsxkgpgcajxh5henxuc7v7uffo7eplnf3vvqxpwem";
+      
+      console.log(`📥 Fetching data from Pinata...`);
+      const response = await fetch(testDataUrl);
+      
+      if (!response.ok) {
+        console.error(`❌ Failed to fetch test data: ${response.statusText}`);
+        return;
+      }
+      
+      const data = await response.json();
+      console.log("✅ Test data fetched successfully");
+      console.log("📋 Data:", JSON.stringify(data, null, 2));
+      
+      // TODO: Parse and store the data based on its type
+      // For now, just log it to verify the fetch works
+      
+    } catch (error) {
+      console.error("❌ Error loading test data:", error);
+    }
+  }
+
+  // Run initialization
+  await initializeData();
 }
