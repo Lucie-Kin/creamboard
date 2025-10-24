@@ -47,56 +47,21 @@ const server = createServer(app);
   // Register API routes first
   await registerRoutes(app, server);
 
-  if (process.env.NODE_ENV === "production") {
-    // Production: serve pre-built static files
-    const distPath = path.resolve(process.cwd(), "dist/public");
-    
-    if (!fs.existsSync(distPath)) {
-      console.error(`❌ Production build not found at ${distPath}`);
-      console.error(`Please run 'npm run build' first.`);
-      process.exit(1);
-    }
-
-    app.use(express.static(distPath));
-
-    // Serve index.html for all non-API routes (SPA fallback)
-    app.get("*", (_req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-    
-    console.log(`📁 Serving static files from: ${distPath}`);
-
-  } else {
-    // Development: use Vite dev server with HMR
-    // Dynamically import Vite only in development
-    const { createServer: createViteServer } = await import("vite");
-    
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-
-    app.use(vite.middlewares);
-
-    // Serve index.html for all non-API routes
-    app.get("*", async (req, res, next) => {
-      if (req.path.startsWith("/api")) {
-        return next();
-      }
-
-      try {
-        const clientPath = path.resolve(process.cwd(), "client/index.html");
-        let html = fs.readFileSync(clientPath, "utf-8");
-        html = await vite.transformIndexHtml(req.originalUrl, html);
-        res.status(200).set({ "Content-Type": "text/html" }).end(html);
-      } catch (e) {
-        vite.ssrFixStacktrace(e as Error);
-        next(e);
-      }
-    });
-    
-    console.log(`⚡ Vite dev server enabled with HMR`);
+  // Production: serve pre-built static files
+  const distPath = path.resolve(process.cwd(), "dist/public");
+  
+  if (!fs.existsSync(distPath)) {
+    console.error(`❌ Production build not found at ${distPath}`);
+    console.error(`Please run 'npm run build' first.`);
+    process.exit(1);
   }
+
+  app.use(express.static(distPath));
+
+  // Serve index.html for all non-API routes (SPA fallback)
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
 
   // Error handling middleware
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -112,8 +77,8 @@ const server = createServer(app);
   const port = parseInt(process.env.PORT || "5000", 10);
   
   server.listen(port, "0.0.0.0", () => {
-    console.log(`🚀 Server running on port ${port}`);
-    console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
+    console.log(`🚀 Production server running on port ${port}`);
+    console.log(`📁 Serving static files from: ${distPath}`);
     console.log(`🌐 URL: http://0.0.0.0:${port}`);
   });
 })();
