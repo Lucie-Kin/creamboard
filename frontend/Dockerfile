@@ -5,8 +5,7 @@ WORKDIR /app
 
 # Install dependencies only when needed
 FROM base AS deps
-COPY package.json ./
-COPY package-lock.json* ./ 2>/dev/null || true
+COPY package*.json ./
 RUN npm install
 
 # Build the application
