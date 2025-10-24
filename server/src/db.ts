@@ -44,6 +44,12 @@ export class DbStorage implements IStorage {
 
   async setProductionFlow(flow: ProductionFlow): Promise<void> {
     this.productionFlow = flow;
+    
+    // Update stations map (critical for station endpoints to work)
+    this.stations.clear();
+    for (const station of flow.stations) {
+      this.stations.set(station.id, station);
+    }
   }
 
   // Floor Plan (database-backed)
