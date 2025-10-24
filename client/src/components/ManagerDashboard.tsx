@@ -369,7 +369,7 @@ export default function ManagerDashboard() {
                           value={productsPerSquare}
                           onChange={(e) => {
                             const value = parseInt(e.target.value, 10);
-                            if (!isNaN(value) && value > 0) {
+                            if (!isNaN(value) && value > 0 && value <= 1000) {
                               setProductsPerSquare(value);
                               localStorage.setItem('products-per-square', value.toString());
                             }
