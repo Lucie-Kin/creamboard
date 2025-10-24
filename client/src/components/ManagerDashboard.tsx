@@ -60,6 +60,12 @@ export default function ManagerDashboard() {
     "recent-batches"
   ]);
   const [viewMode, setViewMode] = useState<"timeline" | "flow">("timeline");
+  
+  // Timeline sensitivity setting
+  const [productsPerSquare, setProductsPerSquare] = useState<number>(() => {
+    const saved = localStorage.getItem('products-per-square');
+    return saved ? parseInt(saved, 10) : 100;
+  });
 
   // Fetch data from Pinata-based API (NO MOCK DATA)
   const { data: stations = [], isLoading: stationsLoading } = useStations();
@@ -319,30 +325,64 @@ export default function ManagerDashboard() {
 
               {activePage === "settings" && (
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Alert Settings</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium">
-                        Alert Threshold (number of red statuses)
-                      </label>
-                      <input
-                        type="number"
-                        defaultValue={3}
-                        className="mt-2 w-full max-w-xs px-3 py-2 border rounded-lg"
-                        data-testid="input-threshold"
-                      />
+                  <h3 className="text-lg font-semibold mb-4">Dashboard Settings</h3>
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <h4 className="text-sm font-semibold text-muted-foreground">Alert Settings</h4>
+                      <div>
+                        <label className="text-sm font-medium">
+                          Alert Threshold (number of red statuses)
+                        </label>
+                        <input
+                          type="number"
+                          defaultValue={3}
+                          className="mt-2 w-full max-w-xs px-3 py-2 border rounded-lg"
+                          data-testid="input-threshold"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">
+                          Products per Batch (average)
+                        </label>
+                        <input
+                          type="number"
+                          defaultValue={300}
+                          className="mt-2 w-full max-w-xs px-3 py-2 border rounded-lg"
+                          data-testid="input-batch-size"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium">
-                        Products per Batch (average)
-                      </label>
-                      <input
-                        type="number"
-                        defaultValue={300}
-                        className="mt-2 w-full max-w-xs px-3 py-2 border rounded-lg"
-                        data-testid="input-batch-size"
-                      />
+
+                    <div className="space-y-4 pt-4 border-t">
+                      <h4 className="text-sm font-semibold text-muted-foreground">Timeline Settings</h4>
+                      <div>
+                        <label className="text-sm font-medium">
+                          Products per Square (timeline sensitivity)
+                        </label>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Controls how many products each square represents in the Production Timeline
+                        </p>
+                        <input
+                          type="number"
+                          min="1"
+                          max="1000"
+                          value={productsPerSquare}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value, 10);
+                            if (!isNaN(value) && value > 0) {
+                              setProductsPerSquare(value);
+                              localStorage.setItem('products-per-square', value.toString());
+                            }
+                          }}
+                          className="mt-2 w-full max-w-xs px-3 py-2 border rounded-lg"
+                          data-testid="input-products-per-square"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Current: Each square = {productsPerSquare} products
+                        </p>
+                      </div>
                     </div>
+
                     <Button data-testid="button-save-settings">Save Settings</Button>
                   </div>
                 </Card>
