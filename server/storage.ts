@@ -63,12 +63,97 @@ export class MemStorage implements IStorage {
   private providers: Map<string, ProviderData> = new Map();
 
   constructor() {
+    // Initialize production flow with complete supply chain
+    const defaultStations: StationConfig[] = [
+      {
+        id: "arrival-dock",
+        name: "Arrival Dock",
+        type: "arrival_dock",
+        enabled: true,
+        position: { x: 50, y: 100 },
+        nextStation: "storage-tanks"
+      },
+      {
+        id: "storage-tanks",
+        name: "Storage Tanks",
+        type: "storage_tank",
+        enabled: true,
+        position: { x: 200, y: 100 },
+        nextStation: "lab-rd"
+      },
+      {
+        id: "lab-rd",
+        name: "Lab/R&D",
+        type: "lab_rd",
+        enabled: true,
+        position: { x: 350, y: 100 },
+        nextStation: "mixing-room"
+      },
+      {
+        id: "mixing-room",
+        name: "Mixing Room",
+        type: "mixing_room",
+        enabled: true,
+        position: { x: 500, y: 100 },
+        nextStation: "heating-room"
+      },
+      {
+        id: "heating-room",
+        name: "Heating Room",
+        type: "heating_room",
+        enabled: true,
+        position: { x: 650, y: 100 },
+        nextStation: "cooling-room"
+      },
+      {
+        id: "cooling-room",
+        name: "Cooling Room",
+        type: "cooling_room",
+        enabled: true,
+        position: { x: 800, y: 100 },
+        nextStation: "packaging"
+      },
+      {
+        id: "packaging",
+        name: "Packaging",
+        type: "packaging",
+        enabled: true,
+        position: { x: 950, y: 100 },
+        nextStation: "storage-final"
+      },
+      {
+        id: "storage-final",
+        name: "Final Storage",
+        type: "storage",
+        enabled: true,
+        position: { x: 1100, y: 100 },
+        nextStation: "delivery-dock"
+      },
+      {
+        id: "delivery-dock",
+        name: "Delivery Dock",
+        type: "delivery_dock",
+        enabled: true,
+        position: { x: 1250, y: 100 },
+        nextStation: null
+      }
+    ];
+
+    this.productionFlow = {
+      flowOrder: ["arrival-dock", "storage-tanks", "lab-rd", "mixing-room", "heating-room", "cooling-room", "packaging", "storage-final", "delivery-dock"],
+      stations: defaultStations
+    };
+
+    for (const station of defaultStations) {
+      this.stations.set(station.id, station);
+    }
+
     // Initialize with test data for Docker deployment
     this.batches.set("batch-1", {
       id: "batch-1",
       batchNumber: "MK-2024-001",
       productName: "Vanilla Ice Cream",
-      currentStation: "mixing room",
+      currentStation: "mixing-room",
       status: "green",
       productsInBatch: 500,
       productsCompleted: 350,
@@ -79,7 +164,7 @@ export class MemStorage implements IStorage {
       id: "batch-2",
       batchNumber: "MK-2024-002",
       productName: "Chocolate Ice Cream",
-      currentStation: "heating room",
+      currentStation: "heating-room",
       status: "yellow",
       productsInBatch: 600,
       productsCompleted: 400,
