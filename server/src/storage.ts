@@ -392,4 +392,9 @@ export class MemStorage implements IStorage {
   }
 }
 
+// Export MemStorage for backward compatibility (Docker deployments)
+export { MemStorage };
+
+// Note: For Replit deployments with database, use DbStorage from db.ts
+// The routes.ts file will import and use the appropriate storage
 export const storage = new MemStorage();

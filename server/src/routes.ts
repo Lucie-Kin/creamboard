@@ -5,8 +5,12 @@
 
 import type { Express } from "express";
 import type { Server } from "http";
-import { storage } from "./storage";
+import { MemStorage } from "./storage";
+import { DbStorage } from "./db";
 import { getPinataService } from "./services/pinata";
+
+// Use database storage if DATABASE_URL is available, otherwise use in-memory
+const storage = process.env.DATABASE_URL ? new DbStorage() : new MemStorage();
 import {
   tokenToStationConfig,
   tokenToBatchData,
