@@ -21,7 +21,7 @@ import {
   Save
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useFloorPlan } from "@/lib/api-hooks";
 
 interface Station {
@@ -149,6 +149,9 @@ export default function FactoryFloorPlan() {
       };
 
       await apiRequest("POST", "/api/floor-plan", floorPlanData);
+
+      // Invalidate cache to reload the floor plan
+      await queryClient.invalidateQueries({ queryKey: ["/api/floor-plan"] });
 
       toast({
         title: "Floor plan saved!",
