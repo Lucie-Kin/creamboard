@@ -109,58 +109,42 @@ Access:
 make docker-down
 ```
 
-## 🔗 Integrating Your Solana Backend
+## 🔗 Integrating Pinata + Solana
 
-### 1. Add Solana Dependencies
+**IMPORTANT:** The dashboard now uses **Pinata Cloud (IPFS)** for data storage instead of PostgreSQL!
 
-```bash
-cd backend
-npm install @solana/web3.js @project-serum/anchor
-```
+### Data Storage Architecture
 
-### 2. Place Your Solana Files
+- ✅ **Pinata IPFS** - All data stored as Solana token metadata JSON
+- ✅ **Chained structure** - Tokens linked with `prev` field
+- ✅ **No mock data** - Clean slate for your real production data
+- ✅ **Configurable flow** - Only show stations you configure
 
-```
-solana/
-  └── your-solana-program-files-here
-```
+### See Full Integration Guide
 
-### 3. Update Backend Routes
+📘 **Read `PINATA_GUIDE.md` for complete instructions** on:
+- Structuring your Solana token metadata
+- Creating production flow configuration
+- Loading batch data from Pinata
+- API endpoints and examples
 
-Edit `backend/src/routes.ts`:
+### Quick Start with Pinata
 
-```typescript
-import { Connection, PublicKey } from "@solana/web3.js";
-
-export async function registerRoutes(app: Express, server: Server) {
-  // Your existing routes...
-
-  // Add Solana endpoints
-  app.post("/api/solana/transaction", async (req, res) => {
-    try {
-      const connection = new Connection(
-        process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com"
-      );
-      
-      // Your Solana transaction logic here
-      // Import and use your client.ts logic
-      
-      res.json({ success: true });
-    } catch (error) {
-      res.status(500).json({ error: "Transaction failed" });
-    }
-  });
-}
-```
-
-### 4. Configure Solana Environment
-
-Add to `backend/.env`:
+1. **Configure Pinata URL** in `backend/.env`:
 ```env
-SOLANA_RPC_URL=https://api.devnet.solana.com
-SOLANA_PROGRAM_ID=your-program-id
-SOLANA_WALLET_SECRET=your-wallet-secret
+PINATA_GATEWAY_URL=https://gateway.pinata.cloud
 ```
+
+2. **Upload your station tokens** to Pinata (see `PINATA_GUIDE.md`)
+
+3. **Configure production flow**:
+```bash
+curl -X POST http://localhost:3001/api/config/production-flow \
+  -H "Content-Type: application/json" \
+  -d '{"tokenCid": "YOUR_CHAIN_HEAD_CID"}'
+```
+
+4. **The dashboard will now show only YOUR configured stations in YOUR specified order!**
 
 ## 📡 API Endpoints
 
