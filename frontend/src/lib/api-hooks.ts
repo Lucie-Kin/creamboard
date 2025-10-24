@@ -5,7 +5,16 @@
 
 import { useQuery, useMutation, type UseQueryResult } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "./queryClient";
-import type { StationConfig, BatchData, AlertData, OperatorData, ProductionFlow } from "@shared/pinata-schema";
+import type { 
+  StationConfig, 
+  BatchData, 
+  AlertData, 
+  OperatorData, 
+  ProductionFlow,
+  ProviderData,
+  TransporterData,
+  DistributorData
+} from "@shared/pinata-schema";
 
 // ==================== PRODUCTION FLOW ====================
 
@@ -186,6 +195,114 @@ export function useAddOperator() {
     mutationFn: async (operator: Omit<OperatorData, "id">) => {
       const res = await apiRequest("POST", "/api/operators", operator);
       return await res.json();
+    },
+  });
+}
+
+// ==================== PROVIDERS (EXTERNAL SUPPLY CHAIN) ====================
+
+/**
+ * Get all providers
+ */
+export function useProviders(): UseQueryResult<ProviderData[]> {
+  return useQuery<ProviderData[]>({
+    queryKey: ["/api/providers"],
+  });
+}
+
+/**
+ * Get single provider by ID
+ */
+export function useProvider(id: string): UseQueryResult<ProviderData | null> {
+  return useQuery<ProviderData | null>({
+    queryKey: ["/api/providers", id],
+    enabled: !!id,
+  });
+}
+
+/**
+ * Load provider from Pinata
+ */
+export function useLoadProvider() {
+  return useMutation({
+    mutationFn: async (tokenCid: string) => {
+      const res = await apiRequest("POST", "/api/providers/load", { tokenCid });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/providers"] });
+    },
+  });
+}
+
+// ==================== TRANSPORTERS (EXTERNAL SUPPLY CHAIN) ====================
+
+/**
+ * Get all transporters
+ */
+export function useTransporters(): UseQueryResult<TransporterData[]> {
+  return useQuery<TransporterData[]>({
+    queryKey: ["/api/transporters"],
+  });
+}
+
+/**
+ * Get single transporter by ID
+ */
+export function useTransporter(id: string): UseQueryResult<TransporterData | null> {
+  return useQuery<TransporterData | null>({
+    queryKey: ["/api/transporters", id],
+    enabled: !!id,
+  });
+}
+
+/**
+ * Load transporter from Pinata
+ */
+export function useLoadTransporter() {
+  return useMutation({
+    mutationFn: async (tokenCid: string) => {
+      const res = await apiRequest("POST", "/api/transporters/load", { tokenCid });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/transporters"] });
+    },
+  });
+}
+
+// ==================== DISTRIBUTORS (EXTERNAL SUPPLY CHAIN) ====================
+
+/**
+ * Get all distributors
+ */
+export function useDistributors(): UseQueryResult<DistributorData[]> {
+  return useQuery<DistributorData[]>({
+    queryKey: ["/api/distributors"],
+  });
+}
+
+/**
+ * Get single distributor by ID
+ */
+export function useDistributor(id: string): UseQueryResult<DistributorData | null> {
+  return useQuery<DistributorData | null>({
+    queryKey: ["/api/distributors", id],
+    enabled: !!id,
+  });
+}
+
+/**
+ * Load distributor from Pinata
+ */
+export function useLoadDistributor() {
+  return useMutation({
+    mutationFn: async (tokenCid: string) => {
+      const res = await apiRequest("POST", "/api/distributors/load", { tokenCid });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/distributors"] });
     },
   });
 }

@@ -9,6 +9,9 @@ import {
   AlertData,
   OperatorData,
   ProductionFlow,
+  ProviderData,
+  TransporterData,
+  DistributorData,
 } from "@shared/pinata-schema";
 
 export interface IStorage {
@@ -41,6 +44,21 @@ export interface IStorage {
   getOperator(id: string): Promise<OperatorData | null>;
   getOperatorByQR(qrCode: string): Promise<OperatorData | null>;
   addOperator(operator: OperatorData): Promise<void>;
+  
+  // Provider Management (External Supply Chain)
+  getProviders(): Promise<ProviderData[]>;
+  getProvider(id: string): Promise<ProviderData | null>;
+  addProvider(provider: ProviderData): Promise<void>;
+  
+  // Transporter Management (External Supply Chain)
+  getTransporters(): Promise<TransporterData[]>;
+  getTransporter(id: string): Promise<TransporterData | null>;
+  addTransporter(transporter: TransporterData): Promise<void>;
+  
+  // Distributor Management (External Supply Chain)
+  getDistributors(): Promise<DistributorData[]>;
+  getDistributor(id: string): Promise<DistributorData | null>;
+  addDistributor(distributor: DistributorData): Promise<void>;
 }
 
 /**
@@ -54,6 +72,9 @@ export class MemStorage implements IStorage {
   private batches: Map<string, BatchData> = new Map();
   private alerts: Map<string, AlertData> = new Map();
   private operators: Map<string, OperatorData> = new Map();
+  private providers: Map<string, ProviderData> = new Map();
+  private transporters: Map<string, TransporterData> = new Map();
+  private distributors: Map<string, DistributorData> = new Map();
 
   constructor() {
     // NO MOCK DATA INITIALIZATION
@@ -171,6 +192,45 @@ export class MemStorage implements IStorage {
     this.operators.set(operator.id, operator);
   }
 
+  // Provider Management
+  async getProviders(): Promise<ProviderData[]> {
+    return Array.from(this.providers.values());
+  }
+
+  async getProvider(id: string): Promise<ProviderData | null> {
+    return this.providers.get(id) || null;
+  }
+
+  async addProvider(provider: ProviderData): Promise<void> {
+    this.providers.set(provider.providerId, provider);
+  }
+
+  // Transporter Management
+  async getTransporters(): Promise<TransporterData[]> {
+    return Array.from(this.transporters.values());
+  }
+
+  async getTransporter(id: string): Promise<TransporterData | null> {
+    return this.transporters.get(id) || null;
+  }
+
+  async addTransporter(transporter: TransporterData): Promise<void> {
+    this.transporters.set(transporter.transporterId, transporter);
+  }
+
+  // Distributor Management
+  async getDistributors(): Promise<DistributorData[]> {
+    return Array.from(this.distributors.values());
+  }
+
+  async getDistributor(id: string): Promise<DistributorData | null> {
+    return this.distributors.get(id) || null;
+  }
+
+  async addDistributor(distributor: DistributorData): Promise<void> {
+    this.distributors.set(distributor.distributorId, distributor);
+  }
+
   // Utility methods
   clear(): void {
     this.productionFlow = null;
@@ -178,6 +238,9 @@ export class MemStorage implements IStorage {
     this.batches.clear();
     this.alerts.clear();
     this.operators.clear();
+    this.providers.clear();
+    this.transporters.clear();
+    this.distributors.clear();
   }
 }
 

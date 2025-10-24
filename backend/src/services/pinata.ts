@@ -88,6 +88,32 @@ export class PinataService {
   }
 
   /**
+   * Fetch plain JSON data from Pinata (for non-token entities like providers, transporters, distributors)
+   * Does not validate against token schema - returns raw JSON
+   */
+  async fetchTokenMetadata(cidOrUrl: string): Promise<any> {
+    try {
+      // Determine if it's a CID or full URL
+      const url = cidOrUrl.startsWith("http")
+        ? cidOrUrl
+        : `${this.gatewayUrl}/ipfs/${cidOrUrl}`;
+
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.error(`Failed to fetch from Pinata: ${response.statusText}`);
+        return null;
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching metadata from Pinata:", error);
+      return null;
+    }
+  }
+
+  /**
    * Clear the cache
    */
   clearCache(): void {

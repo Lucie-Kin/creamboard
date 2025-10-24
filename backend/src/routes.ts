@@ -10,11 +10,17 @@ import { getPinataService } from "./services/pinata";
 import {
   tokenToStationConfig,
   tokenToBatchData,
+  tokenToProviderData,
+  tokenToTransporterData,
+  tokenToDistributorData,
   type ProductionFlow,
   type StationConfig,
   type BatchData,
   type AlertData,
   type OperatorData,
+  type ProviderData,
+  type TransporterData,
+  type DistributorData,
 } from "@shared/pinata-schema";
 
 export async function registerRoutes(app: Express, server: Server): Promise<void> {
@@ -348,6 +354,282 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
     } catch (error) {
       console.error("Error adding operator:", error);
       res.status(500).json({ error: "Failed to add operator" });
+    }
+  });
+
+  // ==================== PROVIDERS (EXTERNAL SUPPLY CHAIN) ====================
+  
+  /**
+   * Get all providers
+   * GET /api/providers
+   */
+  app.get("/api/providers", async (_req, res) => {
+    try {
+      const providers = await storage.getProviders();
+      res.json(providers);
+    } catch (error) {
+      console.error("Error getting providers:", error);
+      res.status(500).json({ error: "Failed to get providers" });
+    }
+  });
+
+  /**
+   * Get single provider
+   * GET /api/providers/:id
+   */
+  app.get("/api/providers/:id", async (req, res) => {
+    try {
+      const provider = await storage.getProvider(req.params.id);
+      if (!provider) {
+        return res.status(404).json({ error: "Provider not found" });
+      }
+      res.json(provider);
+    } catch (error) {
+      console.error("Error getting provider:", error);
+      res.status(500).json({ error: "Failed to get provider" });
+    }
+  });
+
+  /**
+   * Load provider from Pinata
+   * POST /api/providers/load
+   * Body: { tokenCid: "bafkrei..." }
+   */
+  app.post("/api/providers/load", async (req, res) => {
+    try {
+      const { tokenCid } = req.body;
+      
+      if (!tokenCid) {
+        return res.status(400).json({ error: "tokenCid is required" });
+      }
+
+      const tokenData = await pinataService.fetchTokenMetadata(tokenCid);
+      
+      if (!tokenData) {
+        return res.status(502).json({ error: "Failed to fetch data from Pinata" });
+      }
+
+      const provider = tokenToProviderData(tokenData);
+      
+      if (!provider) {
+        return res.status(400).json({ error: "Invalid provider data in token" });
+      }
+
+      await storage.addProvider(provider);
+      res.json({ success: true, provider });
+    } catch (error) {
+      console.error("Error loading provider:", error);
+      res.status(500).json({ error: "Failed to load provider from Pinata" });
+    }
+  });
+
+  /**
+   * Add provider directly
+   * POST /api/providers
+   */
+  app.post("/api/providers", async (req, res) => {
+    try {
+      const provider: ProviderData = {
+        providerId: req.body.providerId || `prov-${Date.now()}`,
+        name: req.body.name,
+        address: req.body.address,
+        owner: req.body.owner,
+        type: req.body.type,
+        productionCapacity: req.body.productionCapacity,
+        distanceKm: req.body.distanceKm,
+        certifications: req.body.certifications || [],
+        conditions: req.body.conditions,
+        status: req.body.status || "verified",
+      };
+      
+      await storage.addProvider(provider);
+      res.json(provider);
+    } catch (error) {
+      console.error("Error adding provider:", error);
+      res.status(500).json({ error: "Failed to add provider" });
+    }
+  });
+
+  // ==================== TRANSPORTERS (EXTERNAL SUPPLY CHAIN) ====================
+  
+  /**
+   * Get all transporters
+   * GET /api/transporters
+   */
+  app.get("/api/transporters", async (_req, res) => {
+    try {
+      const transporters = await storage.getTransporters();
+      res.json(transporters);
+    } catch (error) {
+      console.error("Error getting transporters:", error);
+      res.status(500).json({ error: "Failed to get transporters" });
+    }
+  });
+
+  /**
+   * Get single transporter
+   * GET /api/transporters/:id
+   */
+  app.get("/api/transporters/:id", async (req, res) => {
+    try {
+      const transporter = await storage.getTransporter(req.params.id);
+      if (!transporter) {
+        return res.status(404).json({ error: "Transporter not found" });
+      }
+      res.json(transporter);
+    } catch (error) {
+      console.error("Error getting transporter:", error);
+      res.status(500).json({ error: "Failed to get transporter" });
+    }
+  });
+
+  /**
+   * Load transporter from Pinata
+   * POST /api/transporters/load
+   * Body: { tokenCid: "bafkrei..." }
+   */
+  app.post("/api/transporters/load", async (req, res) => {
+    try {
+      const { tokenCid } = req.body;
+      
+      if (!tokenCid) {
+        return res.status(400).json({ error: "tokenCid is required" });
+      }
+
+      const tokenData = await pinataService.fetchTokenMetadata(tokenCid);
+      
+      if (!tokenData) {
+        return res.status(502).json({ error: "Failed to fetch data from Pinata" });
+      }
+
+      const transporter = tokenToTransporterData(tokenData);
+      
+      if (!transporter) {
+        return res.status(400).json({ error: "Invalid transporter data in token" });
+      }
+
+      await storage.addTransporter(transporter);
+      res.json({ success: true, transporter });
+    } catch (error) {
+      console.error("Error loading transporter:", error);
+      res.status(500).json({ error: "Failed to load transporter from Pinata" });
+    }
+  });
+
+  /**
+   * Add transporter directly
+   * POST /api/transporters
+   */
+  app.post("/api/transporters", async (req, res) => {
+    try {
+      const transporter: TransporterData = {
+        transporterId: req.body.transporterId || `trans-${Date.now()}`,
+        company: req.body.company,
+        driver: req.body.driver,
+        vehicle: req.body.vehicle,
+        destination: req.body.destination,
+        routeDistanceKm: req.body.routeDistanceKm,
+        hoursDriven: req.body.hoursDriven,
+        temperatureLog: req.body.temperatureLog || [],
+        status: req.body.status || "pending",
+      };
+      
+      await storage.addTransporter(transporter);
+      res.json(transporter);
+    } catch (error) {
+      console.error("Error adding transporter:", error);
+      res.status(500).json({ error: "Failed to add transporter" });
+    }
+  });
+
+  // ==================== DISTRIBUTORS (EXTERNAL SUPPLY CHAIN) ====================
+  
+  /**
+   * Get all distributors
+   * GET /api/distributors
+   */
+  app.get("/api/distributors", async (_req, res) => {
+    try {
+      const distributors = await storage.getDistributors();
+      res.json(distributors);
+    } catch (error) {
+      console.error("Error getting distributors:", error);
+      res.status(500).json({ error: "Failed to get distributors" });
+    }
+  });
+
+  /**
+   * Get single distributor
+   * GET /api/distributors/:id
+   */
+  app.get("/api/distributors/:id", async (req, res) => {
+    try {
+      const distributor = await storage.getDistributor(req.params.id);
+      if (!distributor) {
+        return res.status(404).json({ error: "Distributor not found" });
+      }
+      res.json(distributor);
+    } catch (error) {
+      console.error("Error getting distributor:", error);
+      res.status(500).json({ error: "Failed to get distributor" });
+    }
+  });
+
+  /**
+   * Load distributor from Pinata
+   * POST /api/distributors/load
+   * Body: { tokenCid: "bafkrei..." }
+   */
+  app.post("/api/distributors/load", async (req, res) => {
+    try {
+      const { tokenCid } = req.body;
+      
+      if (!tokenCid) {
+        return res.status(400).json({ error: "tokenCid is required" });
+      }
+
+      const tokenData = await pinataService.fetchTokenMetadata(tokenCid);
+      
+      if (!tokenData) {
+        return res.status(502).json({ error: "Failed to fetch data from Pinata" });
+      }
+
+      const distributor = tokenToDistributorData(tokenData);
+      
+      if (!distributor) {
+        return res.status(400).json({ error: "Invalid distributor data in token" });
+      }
+
+      await storage.addDistributor(distributor);
+      res.json({ success: true, distributor });
+    } catch (error) {
+      console.error("Error loading distributor:", error);
+      res.status(500).json({ error: "Failed to load distributor from Pinata" });
+    }
+  });
+
+  /**
+   * Add distributor directly
+   * POST /api/distributors
+   */
+  app.post("/api/distributors", async (req, res) => {
+    try {
+      const distributor: DistributorData = {
+        distributorId: req.body.distributorId || `dist-${Date.now()}`,
+        name: req.body.name,
+        location: req.body.location,
+        type: req.body.type,
+        capacity: req.body.capacity,
+        contactPerson: req.body.contactPerson,
+        receivedBatches: req.body.receivedBatches || [],
+        status: req.body.status || "active",
+      };
+      
+      await storage.addDistributor(distributor);
+      res.json(distributor);
+    } catch (error) {
+      console.error("Error adding distributor:", error);
+      res.status(500).json({ error: "Failed to add distributor" });
     }
   });
 }

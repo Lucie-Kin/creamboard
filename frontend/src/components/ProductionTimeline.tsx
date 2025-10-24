@@ -10,12 +10,17 @@ import type { BatchData } from "@shared/pinata-schema";
 interface ProductionTimelineProps {
   batches: BatchData[];
   stationSequence?: string[]; // From floor plan connections
+  showExtendedSupplyChain?: boolean; // Show providers, transporters, distributors
 }
 
 const SQUARES_PER_STATION = 9; // Each station shows 9 squares (900 products max)
 const PRODUCTS_PER_SQUARE = 100;
 
-export default function ProductionTimeline({ batches, stationSequence }: ProductionTimelineProps) {
+export default function ProductionTimeline({ 
+  batches, 
+  stationSequence, 
+  showExtendedSupplyChain = false 
+}: ProductionTimelineProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [cursorPosition, setCursorPosition] = useState<number>(() => {
     const saved = localStorage.getItem('timeline-cursor-position');
@@ -23,11 +28,11 @@ export default function ProductionTimeline({ batches, stationSequence }: Product
   });
   const [showFocusPanel, setShowFocusPanel] = useState(true);
 
-  // Default station sequence if not provided from floor plan
-  const stations = stationSequence || [
+  // Default internal station sequence
+  const internalStations = stationSequence || [
     "arrival dock",
     "storage tanks",
-    "lab/R&D",
+    "lab_rd",        // Updated to match schema
     "mixing room",
     "heating room",
     "cooling room",
@@ -35,6 +40,16 @@ export default function ProductionTimeline({ batches, stationSequence }: Product
     "storage",
     "delivery dock"
   ];
+
+  // Extended supply chain sequence: Providers → Internal Stations → Transporters → Distributors
+  const stations = showExtendedSupplyChain
+    ? [
+        "Providers",           // External: Farms/Suppliers
+        ...internalStations,   // Internal factory stations
+        "Transporters",        // External: Logistics
+        "Distributors"         // External: Resellers/Retailers
+      ]
+    : internalStations;
 
   const totalStations = stations.length;
 
@@ -172,9 +187,17 @@ export default function ProductionTimeline({ batches, stationSequence }: Product
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold">Production Timeline</h3>
+              <h3 className="text-lg font-semibold">
+                Production Timeline
+                {showExtendedSupplyChain && (
+                  <Badge variant="outline" className="ml-2 text-xs">
+                    Extended Supply Chain
+                  </Badge>
+                )}
+              </h3>
               <p className="text-sm text-muted-foreground">
                 Each square = {PRODUCTS_PER_SQUARE} products • Click station headers to set focus cursor
+                {showExtendedSupplyChain && " • Showing full supply chain: Providers → Factory → Distributors"}
               </p>
             </div>
             <div className="flex gap-2">
