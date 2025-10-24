@@ -1,0 +1,101 @@
+➜  creamboard git:(main) make docker-up  
+Starting Docker containers...
+docker-compose up -d
+WARN[0000] /home/lchauffo/Documents/GitHub/creamboard/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+[+] Building 20.6s (39/42)                                                                                            
+ => [internal] load local bake definitions                                                                       0.0s
+ => => reading from stdin 1.10kB                                                                                 0.0s
+ => [frontend internal] load build definition from Dockerfile                                                    0.0s
+ => => transferring dockerfile: 1.19kB                                                                           0.0s
+ => [backend internal] load build definition from Dockerfile                                                     0.0s
+ => => transferring dockerfile: 727B                                                                             0.0s
+ => [frontend internal] load metadata for docker.io/library/node:20-alpine                                       0.7s
+ => [frontend internal] load metadata for docker.io/library/nginx:alpine                                         0.7s
+ => [frontend internal] load .dockerignore                                                                       0.0s
+ => => transferring context: 2B                                                                                  0.0s
+ => [backend internal] load build context                                                                        0.0s
+ => => transferring context: 2.81kB                                                                              0.0s
+ => [frontend base 1/2] FROM docker.io/library/node:20-alpine@sha256:6178e78b972f79c335df281f4b7674a2d85071aae2  0.0s
+ => CACHED [frontend base 2/2] WORKDIR /app                                                                      0.0s
+ => [backend deps 1/2] COPY backend/package*.json ./                                                             0.0s
+ => [backend deps 2/2] RUN npm install                                                                          18.3s
+ => [frontend runner 1/3] FROM docker.io/library/nginx:alpine@sha256:61e01287e546aac28a3f56839c136b31f590273f3b  0.0s
+ => [frontend internal] load build context                                                                       0.0s
+ => => transferring context: 5.62kB                                                                              0.0s
+ => CACHED [frontend deps 1/2] COPY frontend/package*.json ./                                                    0.0s
+ => CACHED [frontend deps 2/2] RUN npm install                                                                   0.0s
+ => CACHED [frontend builder  1/13] COPY --from=deps /app/node_modules ./node_modules                            0.0s
+ => CACHED [frontend builder  2/13] RUN mkdir -p ./shared                                                        0.0s
+ => CACHED [frontend builder  3/13] COPY shared/pinata-schema.ts ./shared/pinata-schema.ts                       0.0s
+ => CACHED [frontend builder  4/13] COPY frontend/src ./src                                                      0.0s
+ => CACHED [frontend builder  5/13] COPY frontend/index.html ./index.html                                        0.0s
+ => CACHED [frontend builder  6/13] COPY frontend/vite.config.ts ./vite.config.ts                                0.0s
+ => CACHED [frontend builder  7/13] COPY frontend/tsconfig.json ./tsconfig.json                                  0.0s
+ => CACHED [frontend builder  8/13] COPY frontend/tsconfig.node.json ./tsconfig.node.json                        0.0s
+ => CACHED [frontend builder  9/13] COPY frontend/tailwind.config.ts ./tailwind.config.ts                        0.0s
+ => CACHED [frontend builder 10/13] COPY frontend/postcss.config.js ./postcss.config.js                          0.0s
+ => CACHED [frontend builder 11/13] COPY frontend/package.json ./package.json                                    0.0s
+ => CACHED [frontend builder 12/13] COPY frontend/nginx.conf ./nginx.conf                                        0.0s
+ => CACHED [frontend builder 13/13] RUN npm run build                                                            0.0s
+ => CACHED [frontend runner 2/3] COPY --from=builder /app/dist /usr/share/nginx/html                             0.0s
+ => CACHED [frontend runner 3/3] COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf              0.0s
+ => [frontend] exporting to image                                                                                0.0s
+ => => exporting layers                                                                                          0.0s
+ => => writing image sha256:3539e944491ca7ddeb1424d3eeafca140ae9b21961b72b5b2ed0a7bffb2869a8                     0.0s
+ => => naming to docker.io/library/creamboard-frontend                                                           0.0s
+ => [frontend] resolving provenance for metadata file                                                            0.0s
+ => CACHED [backend builder 1/7] COPY --from=deps /app/node_modules ./node_modules                               0.0s
+ => CACHED [backend builder 2/7] COPY shared ./shared                                                            0.0s
+ => CACHED [backend builder 3/7] COPY backend/src ./src                                                          0.0s
+ => [backend builder 4/7] COPY backend/tsconfig.json ./tsconfig.json                                             0.0s
+ => [backend builder 5/7] COPY backend/package.json ./package.json                                               0.0s
+ => [backend builder 6/7] COPY backend/build.mjs ./build.mjs                                                     0.0s
+ => ERROR [backend builder 7/7] RUN npm run build                                                                1.3s
+------
+ > [backend builder 7/7] RUN npm run build:
+0.245 
+0.245 > miko-factory-backend@1.0.0 build
+0.245 > tsc && node build.mjs
+0.245 
+1.282 node:internal/modules/esm/resolve:873
+1.282   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+1.282         ^
+1.282 
+1.282 Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'esbuild-plugin-alias' imported from /app/build.mjs
+1.282     at packageResolve (node:internal/modules/esm/resolve:873:9)
+1.282     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+1.282     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+1.282     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+1.282     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+1.282     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+1.282     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+1.282     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+1.282   code: 'ERR_MODULE_NOT_FOUND'
+1.282 }
+1.282 
+1.282 Node.js v20.19.5
+1.286 npm notice
+1.286 npm notice New major version of npm available! 10.8.2 -> 11.6.2
+1.286 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+1.286 npm notice To update run: npm install -g npm@11.6.2
+1.286 npm notice
+------
+Dockerfile:19
+
+--------------------
+
+  17 |     COPY backend/package.json ./package.json
+
+  18 |     COPY backend/build.mjs ./build.mjs
+
+  19 | >>> RUN npm run build
+
+  20 |     
+
+  21 |     # Production image
+
+--------------------
+
+target backend: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+
+make: *** [Makefile:72: docker-up] Error 1
