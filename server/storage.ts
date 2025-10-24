@@ -56,8 +56,39 @@ export class MemStorage implements IStorage {
   private operators: Map<string, OperatorData> = new Map();
 
   constructor() {
-    // NO MOCK DATA INITIALIZATION
-    // Data will be loaded from Pinata via API endpoints
+    // Initialize with test data for Docker deployment
+    this.batches.set("batch-1", {
+      id: "batch-1",
+      batchNumber: "MK-2024-001",
+      productName: "Vanilla Ice Cream",
+      currentStation: "mixing room",
+      status: "green",
+      productsInBatch: 500,
+      productsCompleted: 350,
+      timestamp: new Date().toISOString(),
+    });
+    
+    this.batches.set("batch-2", {
+      id: "batch-2",
+      batchNumber: "MK-2024-002",
+      productName: "Chocolate Ice Cream",
+      currentStation: "heating room",
+      status: "yellow",
+      productsInBatch: 600,
+      productsCompleted: 400,
+      timestamp: new Date().toISOString(),
+    });
+    
+    this.batches.set("batch-3", {
+      id: "batch-3",
+      batchNumber: "MK-2024-003",
+      productName: "Strawberry Ice Cream",
+      currentStation: "packaging",
+      status: "green",
+      productsInBatch: 450,
+      productsCompleted: 430,
+      timestamp: new Date().toISOString(),
+    });
   }
 
   // Production Flow Configuration

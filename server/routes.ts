@@ -7,6 +7,7 @@ import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { getPinataService } from "./services/pinata";
+import { log } from "./vite";
 import {
   tokenToStationConfig,
   tokenToBatchData,
@@ -357,29 +358,34 @@ export async function registerRoutes(app: Express, server: Server): Promise<void
    * Auto-load test data from Pinata on startup
    */
   async function initializeData() {
-    console.log("🔄 Loading test data from Pinata...");
+    log("Loading test data from Pinata...", "init");
     
     try {
       // Hardcoded test data URL
       const testDataUrl = "https://gateway.pinata.cloud/ipfs/bafkreib2sr2lsaqtsxsxkgpgcajxh5henxuc7v7uffo7eplnf3vvqxpwem";
       
-      console.log(`📥 Fetching data from Pinata...`);
+      log(`Fetching from: ${testDataUrl}`, "init");
       const response = await fetch(testDataUrl);
       
       if (!response.ok) {
-        console.error(`❌ Failed to fetch test data: ${response.statusText}`);
+        log(`Failed to fetch: ${response.statusText}`, "init");
         return;
       }
       
       const data = await response.json();
-      console.log("✅ Test data fetched successfully");
-      console.log("📋 Data:", JSON.stringify(data, null, 2));
+      log(`Fetched data successfully: ${JSON.stringify(data).substring(0, 100)}...`, "init");
       
-      // TODO: Parse and store the data based on its type
-      // For now, just log it to verify the fetch works
+      // Try to parse as batch data (Solana token format)
+      const batch = tokenToBatchData(data);
+      if (batch) {
+        await storage.addBatch(batch);
+        log(`Loaded batch: ${batch.batchNumber}`, "init");
+      } else {
+        log("Data doesn't match batch schema, skipping", "init");
+      }
       
     } catch (error) {
-      console.error("❌ Error loading test data:", error);
+      log(`Error loading test data: ${error}`, "init");
     }
   }
 
