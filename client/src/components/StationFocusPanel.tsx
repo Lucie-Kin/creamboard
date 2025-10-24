@@ -259,7 +259,7 @@ export default function StationFocusPanel({
                   {providerData.conditions?.score && <span className="text-sm text-muted-foreground">/100</span>}
                 </div>
                 <p className="text-xs text-muted-foreground italic">
-                  Last audit: {providerData.conditions?.lastAudit ? new Date(providerData.conditions.lastAudit).toLocaleDateString() : 'N/A'}
+                  Last audit: {providerData.conditions?.lastAudit ? new Date(providerData.conditions?.lastAudit).toLocaleDateString() : 'N/A'}
                 </p>
               </div>
             </Card>
