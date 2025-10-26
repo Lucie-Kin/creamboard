@@ -78,6 +78,8 @@ docker-down:
 	@echo "Stopping Docker containers..."
 	docker-compose down --rmi local
 
+re: docker-down docker-up
+
 docker-logs:
 	docker-compose logs -f
 

@@ -60,6 +60,8 @@ export default function ManagerDashboard() {
     "recent-batches"
   ]);
   const [viewMode, setViewMode] = useState<"timeline" | "flow">("timeline");
+  const [showRawData, setShowRawData] = useState(false);
+
 
   // Fetch data from Pinata-based API (NO MOCK DATA)
   const { data: stations = [], isLoading: stationsLoading } = useStations();
@@ -348,6 +350,24 @@ export default function ManagerDashboard() {
                 </Card>
               )}
             </div>
+            {/* Toggle Raw JSON Data */}
+            <div className="fixed bottom-4 right-4 z-50">
+              <Button
+                onClick={() => setShowRawData(!showRawData)}
+                className="bg-unilever-blue hover:bg-unilever-dark text-white shadow-lg"
+              >
+                {showRawData ? "Hide Blockchain Data" : "Show Blockchain Data"}
+              </Button>
+            </div>
+
+            {showRawData && (
+              <div className="fixed bottom-20 right-4 w-[30rem] max-h-[60vh] overflow-auto bg-gray-900 text-white p-4 rounded-xl shadow-2xl z-40">
+                <h2 className="text-lg font-bold mb-2 text-unilever-light">📦 Raw Tokenized Data</h2>
+                <pre className="text-xs whitespace-pre-wrap">
+                  {JSON.stringify({ stations, batches, alerts }, null, 2)}
+                </pre>
+              </div>
+            )}
           </main>
         </div>
       </div>
